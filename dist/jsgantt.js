@@ -131,7 +131,10 @@ exports.GanttChart = function (pDiv, pFormat) {
     this.vRowHeight = 20;
     this.vTodayPx = -1;
     this.vLangs = lang;
-    this.vLang = navigator.language && navigator.language in lang ? navigator.language : "en";
+    this.vLang =
+        navigator.language && navigator.language in lang
+            ? navigator.language
+            : "en";
     this.vChartBody = null;
     this.vChartHead = null;
     this.vListBody = null;
@@ -165,7 +168,8 @@ exports.GanttChart = function (pDiv, pFormat) {
     this.printChart = general_utils_1.printChart.bind(this);
     this.clearDependencies = function () {
         var parent = this.getLines();
-        if (this.vEventsChange.line && typeof this.vEventsChange.line === "function") {
+        if (this.vEventsChange.line &&
+            typeof this.vEventsChange.line === "function") {
             this.removeListener("click", this.vEventsChange.line, parent);
             this.addListener("click", this.vEventsChange.line, parent);
         }
@@ -210,14 +214,18 @@ exports.GanttChart = function (pDiv, pFormat) {
                 vBGColor = "glineitem a";
             var vID = this_1.vTaskList[i].getID();
             var vTmpRow_1, vTmpCell_1 = void 0;
-            if (!(this_1.vTaskList[i].getParItem() && this_1.vTaskList[i].getParItem().getGroup() == 2) || this_1.vTaskList[i].getGroup() == 2) {
+            if (!(this_1.vTaskList[i].getParItem() &&
+                this_1.vTaskList[i].getParItem().getGroup() == 2) ||
+                this_1.vTaskList[i].getGroup() == 2) {
                 if (this_1.vTaskList[i].getVisible() == 0)
                     vTmpRow_1 = draw_utils_1.newNode(vTmpContentTBody, "tr", this_1.vDivId + "child_" + vID, "gname " + vBGColor, null, null, null, "none");
                 else
                     vTmpRow_1 = draw_utils_1.newNode(vTmpContentTBody, "tr", this_1.vDivId + "child_" + vID, "gname " + vBGColor);
                 this_1.vTaskList[i].setListChildRow(vTmpRow_1);
                 draw_utils_1.newNode(vTmpRow_1, "td", null, "gtasklist", "\u00A0");
-                var editableClass = this_1.vEditable ? "gtaskname gtaskeditable" : "gtaskname";
+                var editableClass = this_1.vEditable
+                    ? "gtaskname gtaskeditable"
+                    : "gtaskname";
                 vTmpCell_1 = draw_utils_1.newNode(vTmpRow_1, "td", null, editableClass);
                 var vCellContents = "";
                 for (var j = 1; j < this_1.vTaskList[i].getLevel(); j++) {
@@ -233,7 +241,8 @@ exports.GanttChart = function (pDiv, pFormat) {
                         }
                     }
                     else {
-                        if (vEventClickCollapse_1 && typeof vEventClickCollapse_1 === "function") {
+                        if (vEventClickCollapse_1 &&
+                            typeof vEventClickCollapse_1 === "function") {
                             vEventClickCollapse_1(task_2);
                         }
                     }
@@ -338,7 +347,9 @@ exports.GanttChart = function (pDiv, pFormat) {
                 vCellContents += date_utils_1.formatDateStr(vTmpDate, this.vDayMajorDateDisplayFormat, this.vLangs[this.vLang]);
                 vTmpDate.setDate(vTmpDate.getDate() + 6);
                 if (this.vShowEndWeekDate == 1)
-                    vCellContents += " - " + date_utils_1.formatDateStr(vTmpDate, this.vDayMajorDateDisplayFormat, this.vLangs[this.vLang]);
+                    vCellContents +=
+                        " - " +
+                            date_utils_1.formatDateStr(vTmpDate, this.vDayMajorDateDisplayFormat, this.vLangs[this.vLang]);
                 draw_utils_1.newNode(vTmpCell, "div", null, null, vCellContents, vColWidth * colspan);
                 vTmpDate.setDate(vTmpDate.getDate() + 1);
             }
@@ -365,7 +376,9 @@ exports.GanttChart = function (pDiv, pFormat) {
             }
             else if (this.vFormat == "hour") {
                 vColSpan = 24 - vTmpDate.getHours();
-                if (vTmpDate.getFullYear() == vMaxDate.getFullYear() && vTmpDate.getMonth() == vMaxDate.getMonth() && vTmpDate.getDate() == vMaxDate.getDate())
+                if (vTmpDate.getFullYear() == vMaxDate.getFullYear() &&
+                    vTmpDate.getMonth() == vMaxDate.getMonth() &&
+                    vTmpDate.getDate() == vMaxDate.getDate())
                     vColSpan -= 23 - vMaxDate.getHours();
                 var vTmpCell = draw_utils_1.newNode(vTmpRow, "td", null, vHeaderCellClass, null, null, null, null, vColSpan);
                 draw_utils_1.newNode(vTmpCell, "div", null, null, date_utils_1.formatDateStr(vTmpDate, this.vHourMajorDateDisplayFormat, this.vLangs[this.vLang]), vColWidth * vColSpan);
@@ -452,7 +465,14 @@ exports.GanttChart = function (pDiv, pFormat) {
             vSingleCell = true;
         draw_utils_1.newNode(vTmpDiv, "div", null, "rhscrpad", null, null, vTaskLeftPx + 1);
         vTmpDiv = draw_utils_1.newNode(vRightHeader, "div", null, "glabelfooter");
-        return { gChartLbl: gChartLbl, vTaskLeftPx: vTaskLeftPx, vSingleCell: vSingleCell, vDateRow: vDateRow, vRightHeader: vRightHeader, vNumCols: vNumCols };
+        return {
+            gChartLbl: gChartLbl,
+            vTaskLeftPx: vTaskLeftPx,
+            vSingleCell: vSingleCell,
+            vDateRow: vDateRow,
+            vRightHeader: vRightHeader,
+            vNumCols: vNumCols,
+        };
     };
     /**
      *
@@ -480,13 +500,24 @@ exports.GanttChart = function (pDiv, pFormat) {
             console.info("before tasks loop", bd);
         }
         for (i = 0; i < this.vTaskList.length; i++) {
-            var curTaskStart = this.vTaskList[i].getStart() ? this.vTaskList[i].getStart() : this.vTaskList[i].getPlanStart();
-            var curTaskEnd = this.vTaskList[i].getEnd() ? this.vTaskList[i].getEnd() : this.vTaskList[i].getPlanEnd();
+            console.log("Verificando a tarefa: ", this.vTaskList[i]);
+            var curTaskStart = this.vTaskList[i].getStart()
+                ? this.vTaskList[i].getStart()
+                : this.vTaskList[i].getPlanStart();
+            var curTaskEnd = this.vTaskList[i].getEnd()
+                ? this.vTaskList[i].getEnd()
+                : this.vTaskList[i].getPlanEnd();
+            console.log("curTaskStart: ", curTaskStart);
+            console.log("curTaskEnd: ", curTaskEnd);
             var vTaskLeftPx_1 = general_utils_1.getOffset(vMinDate, curTaskStart, vColWidth, this.vFormat, this.vShowWeekends);
+            console.log("vTaskLeftPx: ", vTaskLeftPx_1);
             var vTaskRightPx = general_utils_1.getOffset(curTaskStart, curTaskEnd, vColWidth, this.vFormat, this.vShowWeekends);
+            console.log("vTaskRightPx: ", vTaskRightPx);
             var curTaskPlanStart = void 0, curTaskPlanEnd = void 0;
             curTaskPlanStart = this.vTaskList[i].getPlanStart();
+            console.log("curTaskPlanStart: ", curTaskPlanStart);
             curTaskPlanEnd = this.vTaskList[i].getPlanEnd();
+            console.log("curTaskPlanEnd: ", curTaskPlanEnd);
             var vTaskPlanLeftPx = 0;
             var vTaskPlanRightPx = 0;
             if (curTaskPlanStart && curTaskPlanEnd) {
@@ -494,7 +525,8 @@ exports.GanttChart = function (pDiv, pFormat) {
                 vTaskPlanRightPx = general_utils_1.getOffset(curTaskPlanStart, curTaskPlanEnd, vColWidth, this.vFormat, this.vShowWeekends);
             }
             var vID = this.vTaskList[i].getID();
-            var vComb = this.vTaskList[i].getParItem() && this.vTaskList[i].getParItem().getGroup() == 2;
+            var vComb = this.vTaskList[i].getParItem() &&
+                this.vTaskList[i].getParItem().getGroup() == 2;
             var vCellFormat = "";
             var vTmpDiv_1 = null;
             var vTmpItem = this.vTaskList[i];
@@ -528,9 +560,15 @@ exports.GanttChart = function (pDiv, pFormat) {
                 // Draw Group Bar which has outer div with inner group div
                 // and several small divs to left and right to create angled-end indicators
                 if (this.vTaskList[i].getGroup()) {
-                    vTaskWidth = vTaskWidth > this.vMinGpLen && vTaskWidth < this.vMinGpLen * 2 ? this.vMinGpLen * 2 : vTaskWidth; // Expand to show two end points
-                    vTaskWidth = vTaskWidth < this.vMinGpLen ? this.vMinGpLen : vTaskWidth; // expand to show one end point
-                    var vTmpRow = draw_utils_1.newNode(vTmpTBody, "tr", this.vDivId + "childrow_" + vID, (this.vTaskList[i].getGroup() == 2 ? "glineitem gitem" : "ggroupitem ggroup") + this.vFormat, null, null, null, this.vTaskList[i].getVisible() == 0 ? "none" : null);
+                    vTaskWidth =
+                        vTaskWidth > this.vMinGpLen && vTaskWidth < this.vMinGpLen * 2
+                            ? this.vMinGpLen * 2
+                            : vTaskWidth; // Expand to show two end points
+                    vTaskWidth =
+                        vTaskWidth < this.vMinGpLen ? this.vMinGpLen : vTaskWidth; // expand to show one end point
+                    var vTmpRow = draw_utils_1.newNode(vTmpTBody, "tr", this.vDivId + "childrow_" + vID, (this.vTaskList[i].getGroup() == 2
+                        ? "glineitem gitem"
+                        : "ggroupitem ggroup") + this.vFormat, null, null, null, this.vTaskList[i].getVisible() == 0 ? "none" : null);
                     this.vTaskList[i].setChildRow(vTmpRow);
                     events_1.addThisRowListeners(this, this.vTaskList[i].getListChildRow(), vTmpRow);
                     var vTmpCell = draw_utils_1.newNode(vTmpRow, "td", null, "gtaskcell gtaskcellbar", null, vColWidth, null, null);
@@ -563,8 +601,14 @@ exports.GanttChart = function (pDiv, pFormat) {
                     else {
                         // Draw Task Bar which has colored bar div
                         var differentDatesHighlight = "";
-                        if (this.vTaskList[i].getEnd() && this.vTaskList[i].getPlanEnd() && this.vTaskList[i].getStart() && this.vTaskList[i].getPlanStart())
-                            if (Date.parse(this.vTaskList[i].getEnd()) !== Date.parse(this.vTaskList[i].getPlanEnd()) || Date.parse(this.vTaskList[i].getStart()) !== Date.parse(this.vTaskList[i].getPlanStart()))
+                        if (this.vTaskList[i].getEnd() &&
+                            this.vTaskList[i].getPlanEnd() &&
+                            this.vTaskList[i].getStart() &&
+                            this.vTaskList[i].getPlanStart())
+                            if (Date.parse(this.vTaskList[i].getEnd()) !==
+                                Date.parse(this.vTaskList[i].getPlanEnd()) ||
+                                Date.parse(this.vTaskList[i].getStart()) !==
+                                    Date.parse(this.vTaskList[i].getPlanStart()))
                                 differentDatesHighlight = "gitemdifferent ";
                         vTmpRow = draw_utils_1.newNode(vTmpTBody, "tr", this.vDivId + "childrow_" + vID, "glineitem " + differentDatesHighlight + "gitem" + this.vFormat, null, null, null, this.vTaskList[i].getVisible() == 0 ? "none" : null);
                         this.vTaskList[i].setChildRow(vTmpRow);
@@ -586,7 +630,10 @@ exports.GanttChart = function (pDiv, pFormat) {
                     }
                     // PLANNED
                     // If exist and one of them are different, show plan bar... show if there is no real vStart as well (just plan dates)
-                    if (vTaskPlanLeftPx && (vTaskPlanLeftPx != vTaskLeftPx_1 || vTaskPlanRightPx != vTaskRightPx || !this.vTaskList[i].getStartVar())) {
+                    if (vTaskPlanLeftPx &&
+                        (vTaskPlanLeftPx != vTaskLeftPx_1 ||
+                            vTaskPlanRightPx != vTaskRightPx ||
+                            !this.vTaskList[i].getStartVar())) {
                         var vTmpPlanDiv = draw_utils_1.newNode(vTmpDivCell, "div", this.vDivId + "bardiv_" + vID, "gtaskbarcontainer gplan", null, vTaskPlanRightPx, vTaskPlanLeftPx);
                         var vTmpPlanDiv2 = draw_utils_1.newNode(vTmpPlanDiv, "div", this.vDivId + "taskbar_" + vID, this.vTaskList[i].getPlanClass() + " gplan", null, vTaskPlanRightPx);
                         this.vTaskList[i].setPlanTaskDiv(vTmpPlanDiv2);
@@ -598,7 +645,10 @@ exports.GanttChart = function (pDiv, pFormat) {
                     // caption
                     if (vComb)
                         vTmpItem = this.vTaskList[i].getParItem();
-                    if (!vComb || (vComb && this.vTaskList[i].getParItem().getEnd() == this.vTaskList[i].getEnd()))
+                    if (!vComb ||
+                        (vComb &&
+                            this.vTaskList[i].getParItem().getEnd() ==
+                                this.vTaskList[i].getEnd()))
                         vCaptClass = "gcaption";
                     // Background cells
                     if (!vSingleCell && !vComb && vTmpRow) {
@@ -657,7 +707,10 @@ exports.GanttChart = function (pDiv, pFormat) {
         if (pEndDate === void 0) { pEndDate = null; }
         var columnCurrentDay = null;
         // Find the Current day cell to put a different class
-        if (this.vShowWeekends !== false && pStartDate && pEndDate && (this.vFormat == "day" || this.vFormat == "week")) {
+        if (this.vShowWeekends !== false &&
+            pStartDate &&
+            pEndDate &&
+            (this.vFormat == "day" || this.vFormat == "week")) {
             var curTaskStart = new Date(pStartDate.getTime());
             var curTaskEnd = new Date();
             var onePeriod = 3600000;
@@ -667,15 +720,19 @@ exports.GanttChart = function (pDiv, pFormat) {
             else if (this.vFormat == "week") {
                 onePeriod *= 24 * 7;
             }
-            columnCurrentDay = Math.floor(general_utils_1.calculateCurrentDateOffset(curTaskStart, curTaskEnd) / onePeriod) - 1;
+            columnCurrentDay =
+                Math.floor(general_utils_1.calculateCurrentDateOffset(curTaskStart, curTaskEnd) / onePeriod) - 1;
         }
         for (var j = 0; j < vNumCols - 1; j++) {
             var vCellFormat = "gtaskcell gtaskcellcols";
-            if (this.vShowWeekends !== false && this.vFormat == "day" && (j % 7 == 4 || j % 7 == 5)) {
+            if (this.vShowWeekends !== false &&
+                this.vFormat == "day" &&
+                (j % 7 == 4 || j % 7 == 5)) {
                 vCellFormat = "gtaskcellwkend";
             }
             //When is the column is the current day/week,give a different class
-            else if ((this.vFormat == "week" || this.vFormat == "day") && j === columnCurrentDay) {
+            else if ((this.vFormat == "week" || this.vFormat == "day") &&
+                j === columnCurrentDay) {
                 vCellFormat = "gtaskcellcurrent";
             }
             draw_utils_1.newNode(vTmpRow, "td", null, vCellFormat, "\u00A0\u00A0", taskCellWidth);
@@ -755,7 +812,8 @@ exports.GanttChart = function (pDiv, pFormat) {
         vTmpDiv.appendChild(rightvTmpDiv);
         draw_utils_1.newNode(vTmpDiv, "div", null, "ggridfooter");
         var vTmpDiv2 = draw_utils_1.newNode(this.getChartBody(), "div", this.vDivId + "Lines", "glinediv");
-        if (this.vEvents.onLineContainerHover && typeof this.vEvents.onLineContainerHover === "function") {
+        if (this.vEvents.onLineContainerHover &&
+            typeof this.vEvents.onLineContainerHover === "function") {
             events_1.addListener("mouseover", this.vEvents.onLineContainerHover, vTmpDiv2);
             events_1.addListener("mouseout", this.vEvents.onLineContainerHover, vTmpDiv2);
         }
@@ -789,11 +847,13 @@ exports.GanttChart = function (pDiv, pFormat) {
                     vScrollDate.setMinutes(0, 0, 0);
                 else
                     vScrollDate.setHours(0, 0, 0, 0);
-                vScrollPx = general_utils_1.getOffset(vMinDate, vScrollDate, vColWidth, this.vFormat, this.vShowWeekends) - 30;
+                vScrollPx =
+                    general_utils_1.getOffset(vMinDate, vScrollDate, vColWidth, this.vFormat, this.vShowWeekends) - 30;
             }
             this.getChartBody().scrollLeft = vScrollPx;
         }
-        if (vMinDate.getTime() <= new Date().getTime() && vMaxDate.getTime() >= new Date().getTime()) {
+        if (vMinDate.getTime() <= new Date().getTime() &&
+            vMaxDate.getTime() >= new Date().getTime()) {
             this.vTodayPx = general_utils_1.getOffset(vMinDate, new Date(), vColWidth, this.vFormat, this.vShowWeekends);
         }
         else
@@ -835,7 +895,9 @@ exports.GanttChart = function (pDiv, pFormat) {
             this.vEvents.afterDraw();
         }
     };
-    if (this.vDiv && this.vDiv.nodeName && this.vDiv.nodeName.toLowerCase() == "div")
+    if (this.vDiv &&
+        this.vDiv.nodeName &&
+        this.vDiv.nodeName.toLowerCase() == "div")
         this.vDivId = this.vDiv.id;
 }; //GanttChart
 

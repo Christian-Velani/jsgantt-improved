@@ -1,0 +1,40 @@
+[
+  {
+    "pID": 1,
+    "pName": "Tarefa Pai",
+    "pStart": "2025-01-02",
+    "pEnd": "2025-02-01",
+    "pPlanStart": "2025-01-01",
+    "pPlanEnd": "2025-01-31",
+    "pClass": "ggroupblack",
+    "pLink": "",
+    "pMile": 0,
+    "pRes": "",
+    "pComp": 0,
+    "pGroup": 1,
+    "pParent": 0,
+    "pOpen": 1,
+    "pDepend": "",
+    "pCaption": "",
+    "pNotes": ""
+  },
+  {
+    "pID": 2,
+    "pName": "Tarefa Filho 1",
+    "pStart": "2025-01-02",
+    "pEnd": "2025-02-01",
+    "pPlanStart": "2025-01-01",
+    "pPlanEnd": "2025-01-31",
+    "pClass": "gtaskblue",
+    "pLink": "",
+    "pMile": 0,
+    "pRes": "",
+    "pComp": 0,
+    "pGroup": 0,
+    "pParent": 1,
+    "pOpen": 1,
+    "pDepend": "",
+    "pCaption": "",
+    "pNotes": ""
+  }
+]
