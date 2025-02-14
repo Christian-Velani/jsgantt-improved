@@ -500,7 +500,7 @@ exports.GanttChart = function (pDiv, pFormat) {
             console.info("before tasks loop", bd);
         }
         for (i = 0; i < this.vTaskList.length; i++) {
-            console.log("Verificando a tarefa: ", this.vTaskList[i]);
+            console.log("Verificando a tarefa: ", this.vTaskList[i].getName());
             var curTaskStart = this.vTaskList[i].getStart()
                 ? this.vTaskList[i].getStart()
                 : this.vTaskList[i].getPlanStart();
@@ -522,11 +522,15 @@ exports.GanttChart = function (pDiv, pFormat) {
             var vTaskPlanRightPx = 0;
             if (curTaskPlanStart && curTaskPlanEnd) {
                 vTaskPlanLeftPx = general_utils_1.getOffset(vMinDate, curTaskPlanStart, vColWidth, this.vFormat, this.vShowWeekends);
+                console.log("vTaskPlanLeftPx: ", vTaskPlanLeftPx);
                 vTaskPlanRightPx = general_utils_1.getOffset(curTaskPlanStart, curTaskPlanEnd, vColWidth, this.vFormat, this.vShowWeekends);
+                console.log("vTaskPlanRightPx: ", vTaskPlanRightPx);
             }
             var vID = this.vTaskList[i].getID();
+            console.log("vID: ", vID);
             var vComb = this.vTaskList[i].getParItem() &&
                 this.vTaskList[i].getParItem().getGroup() == 2;
+            console.log("vComb: ", vComb);
             var vCellFormat = "";
             var vTmpDiv_1 = null;
             var vTmpItem = this.vTaskList[i];
@@ -535,28 +539,41 @@ exports.GanttChart = function (pDiv, pFormat) {
             var taskCellWidth = i === 0 ? vColWidth : null;
             if (this.vTaskList[i].getMile() && !vComb) {
                 var vTmpRow = draw_utils_1.newNode(vTmpTBody, "tr", this.vDivId + "childrow_" + vID, "gmileitem gmile" + this.vFormat, null, null, null, this.vTaskList[i].getVisible() == 0 ? "none" : null);
+                console.log("vTmpRow: ", vTmpRow);
                 this.vTaskList[i].setChildRow(vTmpRow);
+                console.log("Task Child Row: ", this.vTaskList[i].getListChildRow());
                 events_1.addThisRowListeners(this, this.vTaskList[i].getListChildRow(), vTmpRow);
                 var vTmpCell = draw_utils_1.newNode(vTmpRow, "td", null, "gtaskcell gtaskcellmile", null, vColWidth, null, null, null);
+                console.log("vTmpCell: ", vTmpCell);
                 vTmpDiv_1 = draw_utils_1.newNode(vTmpCell, "div", null, "gtaskcelldiv", "\u00A0\u00A0");
+                console.log("vTmpDiv: ", vTmpDiv_1);
                 vTmpDiv_1 = draw_utils_1.newNode(vTmpDiv_1, "div", this.vDivId + "bardiv_" + vID, "gtaskbarcontainer", null, 12, vTaskLeftPx_1 + vTaskRightPx - 6);
+                console.log("vTmpDiv: ", vTmpDiv_1);
                 this.vTaskList[i].setBarDiv(vTmpDiv_1);
+                console.log("Task Bar Div: ", this.vTaskList[1].getBarDiv());
                 var vTmpDiv2 = draw_utils_1.newNode(vTmpDiv_1, "div", this.vDivId + "taskbar_" + vID, this.vTaskList[i].getClass(), null, 12);
+                console.log("vTmpDiv2: ", vTmpDiv2);
                 this.vTaskList[i].setTaskDiv(vTmpDiv2);
-                if (this.vTaskList[i].getCompVal() < 100)
+                console.log("Task Task Div: ", this.vTaskList[1].getTaskDiv());
+                if (this.vTaskList[i].getCompVal() < 100) {
                     vTmpDiv2.appendChild(document.createTextNode("\u25CA"));
+                    console.log("vTmpDiv2: ", vTmpDiv2);
+                }
                 else {
                     vTmpDiv2 = draw_utils_1.newNode(vTmpDiv2, "div", null, "gmilediamond");
+                    console.log("vTmpDiv2: ", vTmpDiv2);
                     draw_utils_1.newNode(vTmpDiv2, "div", null, "gmdtop");
                     draw_utils_1.newNode(vTmpDiv2, "div", null, "gmdbottom");
                 }
                 vCaptClass = "gmilecaption";
+                console.log("vCaptClass: ", vCaptClass);
                 if (!vSingleCell && !vComb) {
                     this.drawColsChart(vNumCols, vTmpRow, taskCellWidth, vMinDate, vMaxDate);
                 }
             }
             else {
                 var vTaskWidth = vTaskRightPx;
+                console.log("vTaskWidth: ", vTaskWidth);
                 // Draw Group Bar which has outer div with inner group div
                 // and several small divs to left and right to create angled-end indicators
                 if (this.vTaskList[i].getGroup()) {
@@ -564,39 +581,177 @@ exports.GanttChart = function (pDiv, pFormat) {
                         vTaskWidth > this.vMinGpLen && vTaskWidth < this.vMinGpLen * 2
                             ? this.vMinGpLen * 2
                             : vTaskWidth; // Expand to show two end points
+                    console.log("vTaskWidth: ", vTaskWidth);
                     vTaskWidth =
                         vTaskWidth < this.vMinGpLen ? this.vMinGpLen : vTaskWidth; // expand to show one end point
-                    var vTmpRow = draw_utils_1.newNode(vTmpTBody, "tr", this.vDivId + "childrow_" + vID, (this.vTaskList[i].getGroup() == 2
-                        ? "glineitem gitem"
-                        : "ggroupitem ggroup") + this.vFormat, null, null, null, this.vTaskList[i].getVisible() == 0 ? "none" : null);
-                    this.vTaskList[i].setChildRow(vTmpRow);
-                    events_1.addThisRowListeners(this, this.vTaskList[i].getListChildRow(), vTmpRow);
-                    var vTmpCell = draw_utils_1.newNode(vTmpRow, "td", null, "gtaskcell gtaskcellbar", null, vColWidth, null, null);
-                    vTmpDiv_1 = draw_utils_1.newNode(vTmpCell, "div", null, "gtaskcelldiv", "\u00A0\u00A0");
-                    this.vTaskList[i].setCellDiv(vTmpDiv_1);
-                    if (this.vTaskList[i].getGroup() == 1) {
+                    console.log("vTaskWidth: ", vTaskWidth);
+                    var vTmpDivCell = void 0, vTmpRow = void 0;
+                    if (vComb) {
+                        vTmpDivCell = vTmpDiv_1 = this.vTaskList[i].getParItem().getCellDiv();
+                    }
+                    else {
+                        var differentDatesHighlight = "";
+                        if (this.vTaskList[i].getEnd() &&
+                            this.vTaskList[i].getPlanEnd() &&
+                            this.vTaskList[i].getStart() &&
+                            this.vTaskList[i].getPlanStart())
+                            if (Date.parse(this.vTaskList[i].getEnd()) !==
+                                Date.parse(this.vTaskList[i].getPlanEnd()) ||
+                                Date.parse(this.vTaskList[i].getStart()) !==
+                                    Date.parse(this.vTaskList[i].getPlanStart())) {
+                                differentDatesHighlight = "gitemdifferent";
+                            }
+                        vTmpRow = draw_utils_1.newNode(vTmpTBody, "tr", this.vDivId + "childrow_" + vID, "glinegroup " + differentDatesHighlight + " ggroup" + this.vFormat, null, null, null, this.vTaskList[i].getVisible() == 0 ? "none" : null);
+                        this.vTaskList[i].setChildRow(vTmpRow);
+                        events_1.addThisRowListeners(this, this.vTaskList[i].getListChildRow(), vTmpRow);
+                        var vTmpCell = draw_utils_1.newNode(vTmpRow, "td", null, "gaskcell gtaskcellcolorbar", null, taskCellWidth, null, null);
+                        vTmpDivCell = vTmpDiv_1 = draw_utils_1.newNode(vTmpCell, "div", null, "gtaskcelldiv", "\u00A0\u00A0");
                         vTmpDiv_1 = draw_utils_1.newNode(vTmpDiv_1, "div", this.vDivId + "bardiv_" + vID, "gtaskbarcontainer", null, vTaskWidth, vTaskLeftPx_1);
                         this.vTaskList[i].setBarDiv(vTmpDiv_1);
-                        var vTmpDiv2 = draw_utils_1.newNode(vTmpDiv_1, "div", this.vDivId + "taskbar_" + vID, this.vTaskList[i].getClass(), null, vTaskWidth);
-                        this.vTaskList[i].setTaskDiv(vTmpDiv2);
-                        draw_utils_1.newNode(vTmpDiv2, "div", this.vDivId + "complete_" + vID, this.vTaskList[i].getClass() + "complete", null, this.vTaskList[i].getCompStr());
+                        var vTmpDiv2 = void 0;
+                        if (this.vTaskList[i].getStartVar()) {
+                            vTmpDiv2 = draw_utils_1.newNode(vTmpDiv_1, "div", this.vDivId + "taskbar_" + vID, this.vTaskList[i].getClass(), null, vTaskWidth);
+                            if (this.vTaskList[i].getBarText()) {
+                                draw_utils_1.newNode(vTmpDiv2, "span", this.vDivId + "tasktextbar_" + vID, "textbar", this.vTaskList[i].getBarText(), this.vTaskList[i].getCompRestStr());
+                            }
+                            this.vTaskList[i].setTaskDiv(vTmpDiv2);
+                        }
                         draw_utils_1.newNode(vTmpDiv_1, "div", null, this.vTaskList[i].getClass() + "endpointleft");
                         if (vTaskWidth >= this.vMinGpLen * 2)
                             draw_utils_1.newNode(vTmpDiv_1, "div", null, this.vTaskList[i].getClass() + "endpointright");
-                        vCaptClass = "ggroupcaption";
+                        if (vTaskPlanLeftPx &&
+                            (vTaskPlanLeftPx != vTaskLeftPx_1 ||
+                                vTaskPlanRightPx != vTaskRightPx ||
+                                !this.vTaskList[i].getStartVar())) {
+                            var vTmpPlanDiv = draw_utils_1.newNode(vTmpDivCell, "div", this.vDivId + "bardiv_" + vID, "gtaskbarcontainer gplan", null, vTaskPlanRightPx, vTaskPlanLeftPx);
+                            var vTmpPlanDiv2 = draw_utils_1.newNode(vTmpPlanDiv, "div", this.vDivId + "taskbar_" + vID, this.vTaskList[i].getPlanClass() + " gplan", null, vTaskPlanRightPx);
+                            this.vTaskList[i].setPlanTaskDiv(vTmpPlanDiv2);
+                        }
+                        if (vTmpDiv2) {
+                            draw_utils_1.newNode(vTmpDiv2, "div", this.vDivId + "complete_" + vID, this.vTaskList[i].getClass() + "complete", null, this.vTaskList[i].getCompStr());
+                        }
+                        if (vComb) {
+                            vTmpItem = this.vTaskList[i].getParItem();
+                        }
+                        if (!vComb ||
+                            (vComb &&
+                                this.vTaskList[i].getParItem().getEnd() ==
+                                    this.vTaskList[i].getEnd())) {
+                            vCaptClass == "gcaption";
+                        }
+                        if (!vSingleCell && !vComb && vTmpRow) {
+                            this.drawColsChart(vNumCols, vTmpRow, taskCellWidth, vMinDate, vMaxDate);
+                        }
                     }
-                    if (!vSingleCell && !vComb) {
-                        this.drawColsChart(vNumCols, vTmpRow, taskCellWidth, vMinDate, vMaxDate);
-                    }
+                    // const vTmpRow = newNode(
+                    //   vTmpTBody,
+                    //   "tr",
+                    //   this.vDivId + "childrow_" + vID,
+                    //   (this.vTaskList[i].getGroup() == 2
+                    //     ? "glineitem gitem"
+                    //     : "ggroupitem ggroup") + this.vFormat,
+                    //   null,
+                    //   null,
+                    //   null,
+                    //   this.vTaskList[i].getVisible() == 0 ? "none" : null
+                    // );
+                    // console.log("vTmpRow: ", vTmpRow);
+                    // this.vTaskList[i].setChildRow(vTmpRow);
+                    // console.log("Task Child Row: ", this.vTaskList[i].getChildRow());
+                    // addThisRowListeners(
+                    //   this,
+                    //   this.vTaskList[i].getListChildRow(),
+                    //   vTmpRow
+                    // );
+                    // const vTmpCell = newNode(
+                    //   vTmpRow,
+                    //   "td",
+                    //   null,
+                    //   "gtaskcell gtaskcellbar",
+                    //   null,
+                    //   vColWidth,
+                    //   null,
+                    //   null
+                    // );
+                    // console.log("vTmpCell: ", vTmpCell);
+                    // vTmpDiv = newNode(
+                    //   vTmpCell,
+                    //   "div",
+                    //   null,
+                    //   "gtaskcelldiv",
+                    //   "\u00A0\u00A0"
+                    // );
+                    // console.log("vTmpDiv: ", vTmpDiv);
+                    // this.vTaskList[i].setCellDiv(vTmpDiv);
+                    // console.log("Task Cell Div: ", this.vTaskList[i].getCellDiv());
+                    // if (this.vTaskList[i].getGroup() == 1) {
+                    //   vTmpDiv = newNode(
+                    //     vTmpDiv,
+                    //     "div",
+                    //     this.vDivId + "bardiv_" + vID,
+                    //     "gtaskbarcontainer",
+                    //     null,
+                    //     vTaskWidth,
+                    //     vTaskLeftPx
+                    //   );
+                    //   console.log("vTmpDiv: ", vTmpDiv);
+                    //   this.vTaskList[i].setBarDiv(vTmpDiv);
+                    //   console.log("Task Bar Div: ", this.vTaskList[i].getBarDiv());
+                    //   const vTmpDiv2 = newNode(
+                    //     vTmpDiv,
+                    //     "div",
+                    //     this.vDivId + "taskbar_" + vID,
+                    //     this.vTaskList[i].getClass(),
+                    //     null,
+                    //     vTaskWidth
+                    //   );
+                    //   console.log("vTmpDiv2: ", vTmpDiv2);
+                    //   this.vTaskList[i].setTaskDiv(vTmpDiv2);
+                    //   console.log("Task Task Div: ", this.vTaskList[i].getTaskDiv());
+                    //   newNode(
+                    //     vTmpDiv2,
+                    //     "div",
+                    //     this.vDivId + "complete_" + vID,
+                    //     this.vTaskList[i].getClass() + "complete",
+                    //     null,
+                    //     this.vTaskList[i].getCompStr()
+                    //   );
+                    //   newNode(
+                    //     vTmpDiv,
+                    //     "div",
+                    //     null,
+                    //     this.vTaskList[i].getClass() + "endpointleft"
+                    //   );
+                    //   if (vTaskWidth >= this.vMinGpLen * 2)
+                    //     newNode(
+                    //       vTmpDiv,
+                    //       "div",
+                    //       null,
+                    //       this.vTaskList[i].getClass() + "endpointright"
+                    //     );
+                    //   vCaptClass = "ggroupcaption";
+                    //   console.log("vCaptClass: ", vCaptClass);
+                    // }
+                    // if (!vSingleCell && !vComb) {
+                    //   this.drawColsChart(
+                    //     vNumCols,
+                    //     vTmpRow,
+                    //     taskCellWidth,
+                    //     vMinDate,
+                    //     vMaxDate
+                    //   );
+                    // }
                 }
                 else {
                     vTaskWidth = vTaskWidth <= 0 ? 1 : vTaskWidth;
+                    console.log("vTaskWidth: ", vTaskWidth);
                     /**
                      * DRAW THE BOXES FOR GANTT
                      */
                     var vTmpDivCell = void 0, vTmpRow = void 0;
                     if (vComb) {
                         vTmpDivCell = vTmpDiv_1 = this.vTaskList[i].getParItem().getCellDiv();
+                        console.log("vTmpDivCell: ", vTmpDivCell);
                     }
                     else {
                         // Draw Task Bar which has colored bar div
@@ -608,25 +763,35 @@ exports.GanttChart = function (pDiv, pFormat) {
                             if (Date.parse(this.vTaskList[i].getEnd()) !==
                                 Date.parse(this.vTaskList[i].getPlanEnd()) ||
                                 Date.parse(this.vTaskList[i].getStart()) !==
-                                    Date.parse(this.vTaskList[i].getPlanStart()))
+                                    Date.parse(this.vTaskList[i].getPlanStart())) {
                                 differentDatesHighlight = "gitemdifferent ";
+                                console.log("differentDatesHighlight: ", differentDatesHighlight);
+                            }
                         vTmpRow = draw_utils_1.newNode(vTmpTBody, "tr", this.vDivId + "childrow_" + vID, "glineitem " + differentDatesHighlight + "gitem" + this.vFormat, null, null, null, this.vTaskList[i].getVisible() == 0 ? "none" : null);
+                        console.log("vTmpRow: ", vTmpRow);
                         this.vTaskList[i].setChildRow(vTmpRow);
+                        console.log("Task Child Row: ", this.vTaskList[i].getChildRow());
                         events_1.addThisRowListeners(this, this.vTaskList[i].getListChildRow(), vTmpRow);
                         var vTmpCell = draw_utils_1.newNode(vTmpRow, "td", null, "gtaskcell gtaskcellcolorbar", null, taskCellWidth, null, null);
+                        console.log("vTmpCell: ", vTmpCell);
                         vTmpDivCell = vTmpDiv_1 = draw_utils_1.newNode(vTmpCell, "div", null, "gtaskcelldiv", "\u00A0\u00A0");
+                        console.log("vTmpDivCell: ", vTmpDivCell);
                     }
                     // DRAW TASK BAR
                     vTmpDiv_1 = draw_utils_1.newNode(vTmpDiv_1, "div", this.vDivId + "bardiv_" + vID, "gtaskbarcontainer", null, vTaskWidth, vTaskLeftPx_1);
+                    console.log("vTmpDiv: ", vTmpDiv_1);
                     this.vTaskList[i].setBarDiv(vTmpDiv_1);
+                    console.log(" Task Bar Div: ", this.vTaskList[i].getBarDiv());
                     var vTmpDiv2 = void 0;
                     if (this.vTaskList[i].getStartVar()) {
                         // textbar
                         vTmpDiv2 = draw_utils_1.newNode(vTmpDiv_1, "div", this.vDivId + "taskbar_" + vID, this.vTaskList[i].getClass(), null, vTaskWidth);
+                        console.log("vTmpDiv2: ", vTmpDiv2);
                         if (this.vTaskList[i].getBarText()) {
                             draw_utils_1.newNode(vTmpDiv2, "span", this.vDivId + "tasktextbar_" + vID, "textbar", this.vTaskList[i].getBarText(), this.vTaskList[i].getCompRestStr());
                         }
                         this.vTaskList[i].setTaskDiv(vTmpDiv2);
+                        console.log("Task Task Div: ", this.vTaskList[i].getTaskDiv());
                     }
                     // PLANNED
                     // If exist and one of them are different, show plan bar... show if there is no real vStart as well (just plan dates)
@@ -635,21 +800,28 @@ exports.GanttChart = function (pDiv, pFormat) {
                             vTaskPlanRightPx != vTaskRightPx ||
                             !this.vTaskList[i].getStartVar())) {
                         var vTmpPlanDiv = draw_utils_1.newNode(vTmpDivCell, "div", this.vDivId + "bardiv_" + vID, "gtaskbarcontainer gplan", null, vTaskPlanRightPx, vTaskPlanLeftPx);
+                        console.log("vTmpPlanDiv: ", vTmpPlanDiv);
                         var vTmpPlanDiv2 = draw_utils_1.newNode(vTmpPlanDiv, "div", this.vDivId + "taskbar_" + vID, this.vTaskList[i].getPlanClass() + " gplan", null, vTaskPlanRightPx);
+                        console.log("vTmpPlanDiv2: ", vTmpPlanDiv2);
                         this.vTaskList[i].setPlanTaskDiv(vTmpPlanDiv2);
+                        console.log("Task plan div: ", this.vTaskList[i].getPlanTaskDiv());
                     }
                     // and opaque completion div
                     if (vTmpDiv2) {
                         draw_utils_1.newNode(vTmpDiv2, "div", this.vDivId + "complete_" + vID, this.vTaskList[i].getClass() + "complete", null, this.vTaskList[i].getCompStr());
                     }
                     // caption
-                    if (vComb)
+                    if (vComb) {
                         vTmpItem = this.vTaskList[i].getParItem();
+                        console.log("vTmpItem: ", vTmpItem);
+                    }
                     if (!vComb ||
                         (vComb &&
                             this.vTaskList[i].getParItem().getEnd() ==
-                                this.vTaskList[i].getEnd()))
+                                this.vTaskList[i].getEnd())) {
                         vCaptClass = "gcaption";
+                        console.log("vCaptClass: ", vCaptClass);
+                    }
                     // Background cells
                     if (!vSingleCell && !vComb && vTmpRow) {
                         this.drawColsChart(vNumCols, vTmpRow, taskCellWidth, vMinDate, vMaxDate);
@@ -672,23 +844,30 @@ exports.GanttChart = function (pDiv, pFormat) {
                         vCaptionStr = vTmpItem.getCompStr();
                         break;
                 }
+                console.log("vCaptionStr: ", vCaptionStr);
                 draw_utils_1.newNode(vTmpDiv_1, "div", null, vCaptClass, vCaptionStr, 120, vCaptClass == "gmilecaption" ? 12 : 0);
             }
             // Add Task Info div for tooltip
             if (this.vTaskList[i].getTaskDiv() && vTmpDiv_1) {
                 var vTmpDiv2 = draw_utils_1.newNode(vTmpDiv_1, "div", this.vDivId + "tt" + vID, null, null, null, null, "none");
+                console.log("vTmpDiv2: ", vTmpDiv2);
                 var _a = this.createTaskInfo(this.vTaskList[i], this.vTooltipTemplate), component = _a.component, callback = _a.callback;
                 vTmpDiv2.appendChild(component);
+                console.log("vTmpDiv2: ", vTmpDiv2);
                 events_1.addTooltipListeners(this, this.vTaskList[i].getTaskDiv(), vTmpDiv2, callback);
             }
             // Add Plan Task Info div for tooltip
             if (this.vTaskList[i].getPlanTaskDiv() && vTmpDiv_1) {
                 var vTmpDiv2 = draw_utils_1.newNode(vTmpDiv_1, "div", this.vDivId + "tt" + vID, null, null, null, null, "none");
+                console.log("vTmpDiv2: ", vTmpDiv2);
                 var _b = this.createTaskInfo(this.vTaskList[i], this.vTooltipTemplate), component = _b.component, callback = _b.callback;
                 vTmpDiv2.appendChild(component);
+                console.log("vTmpDiv2: ", vTmpDiv2);
                 events_1.addTooltipListeners(this, this.vTaskList[i].getPlanTaskDiv(), vTmpDiv2, callback);
             }
         }
+        // ------------------------------------------------------------------------------------------/
+        console.log("vTaskList: ", this.vTaskList);
         // Include the footer with the days/week/month...
         if (vSingleCell) {
             var vTmpTFootTRow = draw_utils_1.newNode(vTmpTFoot, "tr");
