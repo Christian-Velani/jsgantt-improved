@@ -16,6 +16,7 @@ import {
 } from "./events";
 import {
   calculateCurrentDateOffset,
+  changeFormat,
   getOffset,
   getScrollbarWidth,
   printChart,
@@ -929,16 +930,12 @@ export const GanttChart = function (pDiv, pFormat) {
       console.info("before tasks loop", bd);
     }
     for (i = 0; i < this.vTaskList.length; i++) {
-      console.log("Verificando a tarefa: ", this.vTaskList[i].getName());
       let curTaskStart = this.vTaskList[i].getStart()
         ? this.vTaskList[i].getStart()
         : this.vTaskList[i].getPlanStart();
       let curTaskEnd = this.vTaskList[i].getEnd()
         ? this.vTaskList[i].getEnd()
         : this.vTaskList[i].getPlanEnd();
-
-      console.log("curTaskStart: ", curTaskStart);
-      console.log("curTaskEnd: ", curTaskEnd);
 
       const vTaskLeftPx = getOffset(
         vMinDate,
@@ -948,8 +945,6 @@ export const GanttChart = function (pDiv, pFormat) {
         this.vShowWeekends
       );
 
-      console.log("vTaskLeftPx: ", vTaskLeftPx);
-
       const vTaskRightPx = getOffset(
         curTaskStart,
         curTaskEnd,
@@ -958,14 +953,10 @@ export const GanttChart = function (pDiv, pFormat) {
         this.vShowWeekends
       );
 
-      console.log("vTaskRightPx: ", vTaskRightPx);
-
       let curTaskPlanStart, curTaskPlanEnd;
 
       curTaskPlanStart = this.vTaskList[i].getPlanStart();
-      console.log("curTaskPlanStart: ", curTaskPlanStart);
       curTaskPlanEnd = this.vTaskList[i].getPlanEnd();
-      console.log("curTaskPlanEnd: ", curTaskPlanEnd);
       let vTaskPlanLeftPx = 0;
       let vTaskPlanRightPx = 0;
       if (curTaskPlanStart && curTaskPlanEnd) {
@@ -976,7 +967,6 @@ export const GanttChart = function (pDiv, pFormat) {
           this.vFormat,
           this.vShowWeekends
         );
-        console.log("vTaskPlanLeftPx: ", vTaskPlanLeftPx);
         vTaskPlanRightPx = getOffset(
           curTaskPlanStart,
           curTaskPlanEnd,
@@ -984,15 +974,12 @@ export const GanttChart = function (pDiv, pFormat) {
           this.vFormat,
           this.vShowWeekends
         );
-        console.log("vTaskPlanRightPx: ", vTaskPlanRightPx);
       }
 
       const vID = this.vTaskList[i].getID();
-      console.log("vID: ", vID);
       let vComb =
         this.vTaskList[i].getParItem() &&
         this.vTaskList[i].getParItem().getGroup() == 2;
-      console.log("vComb: ", vComb);
       let vCellFormat = "";
       let vTmpDiv = null;
       let vTmpItem = this.vTaskList[i];
@@ -1010,9 +997,7 @@ export const GanttChart = function (pDiv, pFormat) {
           null,
           this.vTaskList[i].getVisible() == 0 ? "none" : null
         );
-        console.log("vTmpRow: ", vTmpRow);
         this.vTaskList[i].setChildRow(vTmpRow);
-        console.log("Task Child Row: ", this.vTaskList[i].getListChildRow());
         addThisRowListeners(this, this.vTaskList[i].getListChildRow(), vTmpRow);
 
         const vTmpCell = newNode(
@@ -1027,8 +1012,6 @@ export const GanttChart = function (pDiv, pFormat) {
           null
         );
 
-        console.log("vTmpCell: ", vTmpCell);
-
         vTmpDiv = newNode(
           vTmpCell,
           "div",
@@ -1036,8 +1019,6 @@ export const GanttChart = function (pDiv, pFormat) {
           "gtaskcelldiv",
           "\u00A0\u00A0"
         );
-
-        console.log("vTmpDiv: ", vTmpDiv);
 
         vTmpDiv = newNode(
           vTmpDiv,
@@ -1049,11 +1030,8 @@ export const GanttChart = function (pDiv, pFormat) {
           vTaskLeftPx + vTaskRightPx - 6
         );
 
-        console.log("vTmpDiv: ", vTmpDiv);
-
         this.vTaskList[i].setBarDiv(vTmpDiv);
 
-        console.log("Task Bar Div: ", this.vTaskList[1].getBarDiv());
         let vTmpDiv2 = newNode(
           vTmpDiv,
           "div",
@@ -1063,24 +1041,17 @@ export const GanttChart = function (pDiv, pFormat) {
           12
         );
 
-        console.log("vTmpDiv2: ", vTmpDiv2);
-
         this.vTaskList[i].setTaskDiv(vTmpDiv2);
-
-        console.log("Task Task Div: ", this.vTaskList[1].getTaskDiv());
 
         if (this.vTaskList[i].getCompVal() < 100) {
           vTmpDiv2.appendChild(document.createTextNode("\u25CA"));
-          console.log("vTmpDiv2: ", vTmpDiv2);
         } else {
           vTmpDiv2 = newNode(vTmpDiv2, "div", null, "gmilediamond");
-          console.log("vTmpDiv2: ", vTmpDiv2);
           newNode(vTmpDiv2, "div", null, "gmdtop");
           newNode(vTmpDiv2, "div", null, "gmdbottom");
         }
 
         vCaptClass = "gmilecaption";
-        console.log("vCaptClass: ", vCaptClass);
         if (!vSingleCell && !vComb) {
           this.drawColsChart(
             vNumCols,
@@ -1092,7 +1063,6 @@ export const GanttChart = function (pDiv, pFormat) {
         }
       } else {
         let vTaskWidth = vTaskRightPx;
-        console.log("vTaskWidth: ", vTaskWidth);
 
         // Draw Group Bar which has outer div with inner group div
         // and several small divs to left and right to create angled-end indicators
@@ -1101,11 +1071,8 @@ export const GanttChart = function (pDiv, pFormat) {
             vTaskWidth > this.vMinGpLen && vTaskWidth < this.vMinGpLen * 2
               ? this.vMinGpLen * 2
               : vTaskWidth; // Expand to show two end points
-          console.log("vTaskWidth: ", vTaskWidth);
           vTaskWidth =
             vTaskWidth < this.vMinGpLen ? this.vMinGpLen : vTaskWidth; // expand to show one end point
-
-          console.log("vTaskWidth: ", vTaskWidth);
 
           let vTmpDivCell, vTmpRow;
           if (vComb) {
@@ -1278,123 +1245,8 @@ export const GanttChart = function (pDiv, pFormat) {
               );
             }
           }
-
-          // const vTmpRow = newNode(
-          //   vTmpTBody,
-          //   "tr",
-          //   this.vDivId + "childrow_" + vID,
-          //   (this.vTaskList[i].getGroup() == 2
-          //     ? "glineitem gitem"
-          //     : "ggroupitem ggroup") + this.vFormat,
-          //   null,
-          //   null,
-          //   null,
-          //   this.vTaskList[i].getVisible() == 0 ? "none" : null
-          // );
-
-          // console.log("vTmpRow: ", vTmpRow);
-
-          // this.vTaskList[i].setChildRow(vTmpRow);
-          // console.log("Task Child Row: ", this.vTaskList[i].getChildRow());
-          // addThisRowListeners(
-          //   this,
-          //   this.vTaskList[i].getListChildRow(),
-          //   vTmpRow
-          // );
-
-          // const vTmpCell = newNode(
-          //   vTmpRow,
-          //   "td",
-          //   null,
-          //   "gtaskcell gtaskcellbar",
-          //   null,
-          //   vColWidth,
-          //   null,
-          //   null
-          // );
-
-          // console.log("vTmpCell: ", vTmpCell);
-
-          // vTmpDiv = newNode(
-          //   vTmpCell,
-          //   "div",
-          //   null,
-          //   "gtaskcelldiv",
-          //   "\u00A0\u00A0"
-          // );
-
-          // console.log("vTmpDiv: ", vTmpDiv);
-          // this.vTaskList[i].setCellDiv(vTmpDiv);
-
-          // console.log("Task Cell Div: ", this.vTaskList[i].getCellDiv());
-          // if (this.vTaskList[i].getGroup() == 1) {
-          //   vTmpDiv = newNode(
-          //     vTmpDiv,
-          //     "div",
-          //     this.vDivId + "bardiv_" + vID,
-          //     "gtaskbarcontainer",
-          //     null,
-          //     vTaskWidth,
-          //     vTaskLeftPx
-          //   );
-          //   console.log("vTmpDiv: ", vTmpDiv);
-          //   this.vTaskList[i].setBarDiv(vTmpDiv);
-
-          //   console.log("Task Bar Div: ", this.vTaskList[i].getBarDiv());
-          //   const vTmpDiv2 = newNode(
-          //     vTmpDiv,
-          //     "div",
-          //     this.vDivId + "taskbar_" + vID,
-          //     this.vTaskList[i].getClass(),
-          //     null,
-          //     vTaskWidth
-          //   );
-
-          //   console.log("vTmpDiv2: ", vTmpDiv2);
-          //   this.vTaskList[i].setTaskDiv(vTmpDiv2);
-
-          //   console.log("Task Task Div: ", this.vTaskList[i].getTaskDiv());
-
-          //   newNode(
-          //     vTmpDiv2,
-          //     "div",
-          //     this.vDivId + "complete_" + vID,
-          //     this.vTaskList[i].getClass() + "complete",
-          //     null,
-          //     this.vTaskList[i].getCompStr()
-          //   );
-
-          //   newNode(
-          //     vTmpDiv,
-          //     "div",
-          //     null,
-          //     this.vTaskList[i].getClass() + "endpointleft"
-          //   );
-          //   if (vTaskWidth >= this.vMinGpLen * 2)
-          //     newNode(
-          //       vTmpDiv,
-          //       "div",
-          //       null,
-          //       this.vTaskList[i].getClass() + "endpointright"
-          //     );
-
-          //   vCaptClass = "ggroupcaption";
-          //   console.log("vCaptClass: ", vCaptClass);
-          // }
-
-          // if (!vSingleCell && !vComb) {
-          //   this.drawColsChart(
-          //     vNumCols,
-          //     vTmpRow,
-          //     taskCellWidth,
-          //     vMinDate,
-          //     vMaxDate
-          //   );
-          // }
         } else {
           vTaskWidth = vTaskWidth <= 0 ? 1 : vTaskWidth;
-
-          console.log("vTaskWidth: ", vTaskWidth);
 
           /**
            * DRAW THE BOXES FOR GANTT
@@ -1402,7 +1254,6 @@ export const GanttChart = function (pDiv, pFormat) {
           let vTmpDivCell, vTmpRow;
           if (vComb) {
             vTmpDivCell = vTmpDiv = this.vTaskList[i].getParItem().getCellDiv();
-            console.log("vTmpDivCell: ", vTmpDivCell);
           } else {
             // Draw Task Bar which has colored bar div
             var differentDatesHighlight = "";
@@ -1419,10 +1270,6 @@ export const GanttChart = function (pDiv, pFormat) {
                   Date.parse(this.vTaskList[i].getPlanStart())
               ) {
                 differentDatesHighlight = "gitemdifferent ";
-                console.log(
-                  "differentDatesHighlight: ",
-                  differentDatesHighlight
-                );
               }
             vTmpRow = newNode(
               vTmpTBody,
@@ -1435,9 +1282,7 @@ export const GanttChart = function (pDiv, pFormat) {
               this.vTaskList[i].getVisible() == 0 ? "none" : null
             );
 
-            console.log("vTmpRow: ", vTmpRow);
             this.vTaskList[i].setChildRow(vTmpRow);
-            console.log("Task Child Row: ", this.vTaskList[i].getChildRow());
             addThisRowListeners(
               this,
               this.vTaskList[i].getListChildRow(),
@@ -1455,7 +1300,6 @@ export const GanttChart = function (pDiv, pFormat) {
               null
             );
 
-            console.log("vTmpCell: ", vTmpCell);
             vTmpDivCell = vTmpDiv = newNode(
               vTmpCell,
               "div",
@@ -1463,8 +1307,6 @@ export const GanttChart = function (pDiv, pFormat) {
               "gtaskcelldiv",
               "\u00A0\u00A0"
             );
-
-            console.log("vTmpDivCell: ", vTmpDivCell);
           }
 
           // DRAW TASK BAR
@@ -1477,9 +1319,7 @@ export const GanttChart = function (pDiv, pFormat) {
             vTaskWidth,
             vTaskLeftPx
           );
-          console.log("vTmpDiv: ", vTmpDiv);
           this.vTaskList[i].setBarDiv(vTmpDiv);
-          console.log(" Task Bar Div: ", this.vTaskList[i].getBarDiv());
           let vTmpDiv2;
           if (this.vTaskList[i].getStartVar()) {
             // textbar
@@ -1492,7 +1332,6 @@ export const GanttChart = function (pDiv, pFormat) {
               vTaskWidth
             );
 
-            console.log("vTmpDiv2: ", vTmpDiv2);
             if (this.vTaskList[i].getBarText()) {
               newNode(
                 vTmpDiv2,
@@ -1504,7 +1343,6 @@ export const GanttChart = function (pDiv, pFormat) {
               );
             }
             this.vTaskList[i].setTaskDiv(vTmpDiv2);
-            console.log("Task Task Div: ", this.vTaskList[i].getTaskDiv());
           }
 
           // PLANNED
@@ -1524,7 +1362,6 @@ export const GanttChart = function (pDiv, pFormat) {
               vTaskPlanRightPx,
               vTaskPlanLeftPx
             );
-            console.log("vTmpPlanDiv: ", vTmpPlanDiv);
             const vTmpPlanDiv2 = newNode(
               vTmpPlanDiv,
               "div",
@@ -1533,9 +1370,7 @@ export const GanttChart = function (pDiv, pFormat) {
               null,
               vTaskPlanRightPx
             );
-            console.log("vTmpPlanDiv2: ", vTmpPlanDiv2);
             this.vTaskList[i].setPlanTaskDiv(vTmpPlanDiv2);
-            console.log("Task plan div: ", this.vTaskList[i].getPlanTaskDiv());
           }
 
           // and opaque completion div
@@ -1553,7 +1388,6 @@ export const GanttChart = function (pDiv, pFormat) {
           // caption
           if (vComb) {
             vTmpItem = this.vTaskList[i].getParItem();
-            console.log("vTmpItem: ", vTmpItem);
           }
           if (
             !vComb ||
@@ -1562,7 +1396,6 @@ export const GanttChart = function (pDiv, pFormat) {
                 this.vTaskList[i].getEnd())
           ) {
             vCaptClass = "gcaption";
-            console.log("vCaptClass: ", vCaptClass);
           }
 
           // Background cells
@@ -1597,7 +1430,6 @@ export const GanttChart = function (pDiv, pFormat) {
             vCaptionStr = vTmpItem.getCompStr();
             break;
         }
-        console.log("vCaptionStr: ", vCaptionStr);
         newNode(
           vTmpDiv,
           "div",
@@ -1621,13 +1453,11 @@ export const GanttChart = function (pDiv, pFormat) {
           null,
           "none"
         );
-        console.log("vTmpDiv2: ", vTmpDiv2);
         const { component, callback } = this.createTaskInfo(
           this.vTaskList[i],
           this.vTooltipTemplate
         );
         vTmpDiv2.appendChild(component);
-        console.log("vTmpDiv2: ", vTmpDiv2);
         addTooltipListeners(
           this,
           this.vTaskList[i].getTaskDiv(),
@@ -1647,13 +1477,11 @@ export const GanttChart = function (pDiv, pFormat) {
           null,
           "none"
         );
-        console.log("vTmpDiv2: ", vTmpDiv2);
         const { component, callback } = this.createTaskInfo(
           this.vTaskList[i],
           this.vTooltipTemplate
         );
         vTmpDiv2.appendChild(component);
-        console.log("vTmpDiv2: ", vTmpDiv2);
         addTooltipListeners(
           this,
           this.vTaskList[i].getPlanTaskDiv(),
@@ -1665,7 +1493,6 @@ export const GanttChart = function (pDiv, pFormat) {
 
     // ------------------------------------------------------------------------------------------/
 
-    console.log("vTaskList: ", this.vTaskList);
     // Include the footer with the days/week/month...
     if (vSingleCell) {
       const vTmpTFootTRow = newNode(vTmpTFoot, "tr");

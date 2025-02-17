@@ -26,6 +26,7 @@ var date_utils_1 = require("./utils/date_utils");
  * @param pFormat (required) - used to indicate whether chart should be drawn in "hour", "day", "week", "month", or "quarter" format
  */
 exports.GanttChart = function (pDiv, pFormat) {
+    var _this = this;
     this.vDiv = pDiv;
     this.vFormat = pFormat;
     this.vDivId = null;
@@ -500,37 +501,26 @@ exports.GanttChart = function (pDiv, pFormat) {
             console.info("before tasks loop", bd);
         }
         for (i = 0; i < this.vTaskList.length; i++) {
-            console.log("Verificando a tarefa: ", this.vTaskList[i].getName());
             var curTaskStart = this.vTaskList[i].getStart()
                 ? this.vTaskList[i].getStart()
                 : this.vTaskList[i].getPlanStart();
             var curTaskEnd = this.vTaskList[i].getEnd()
                 ? this.vTaskList[i].getEnd()
                 : this.vTaskList[i].getPlanEnd();
-            console.log("curTaskStart: ", curTaskStart);
-            console.log("curTaskEnd: ", curTaskEnd);
             var vTaskLeftPx_1 = general_utils_1.getOffset(vMinDate, curTaskStart, vColWidth, this.vFormat, this.vShowWeekends);
-            console.log("vTaskLeftPx: ", vTaskLeftPx_1);
             var vTaskRightPx = general_utils_1.getOffset(curTaskStart, curTaskEnd, vColWidth, this.vFormat, this.vShowWeekends);
-            console.log("vTaskRightPx: ", vTaskRightPx);
             var curTaskPlanStart = void 0, curTaskPlanEnd = void 0;
             curTaskPlanStart = this.vTaskList[i].getPlanStart();
-            console.log("curTaskPlanStart: ", curTaskPlanStart);
             curTaskPlanEnd = this.vTaskList[i].getPlanEnd();
-            console.log("curTaskPlanEnd: ", curTaskPlanEnd);
             var vTaskPlanLeftPx = 0;
             var vTaskPlanRightPx = 0;
             if (curTaskPlanStart && curTaskPlanEnd) {
                 vTaskPlanLeftPx = general_utils_1.getOffset(vMinDate, curTaskPlanStart, vColWidth, this.vFormat, this.vShowWeekends);
-                console.log("vTaskPlanLeftPx: ", vTaskPlanLeftPx);
                 vTaskPlanRightPx = general_utils_1.getOffset(curTaskPlanStart, curTaskPlanEnd, vColWidth, this.vFormat, this.vShowWeekends);
-                console.log("vTaskPlanRightPx: ", vTaskPlanRightPx);
             }
             var vID = this.vTaskList[i].getID();
-            console.log("vID: ", vID);
             var vComb = this.vTaskList[i].getParItem() &&
                 this.vTaskList[i].getParItem().getGroup() == 2;
-            console.log("vComb: ", vComb);
             var vCellFormat = "";
             var vTmpDiv_1 = null;
             var vTmpItem = this.vTaskList[i];
@@ -539,41 +529,29 @@ exports.GanttChart = function (pDiv, pFormat) {
             var taskCellWidth = i === 0 ? vColWidth : null;
             if (this.vTaskList[i].getMile() && !vComb) {
                 var vTmpRow = draw_utils_1.newNode(vTmpTBody, "tr", this.vDivId + "childrow_" + vID, "gmileitem gmile" + this.vFormat, null, null, null, this.vTaskList[i].getVisible() == 0 ? "none" : null);
-                console.log("vTmpRow: ", vTmpRow);
                 this.vTaskList[i].setChildRow(vTmpRow);
-                console.log("Task Child Row: ", this.vTaskList[i].getListChildRow());
                 events_1.addThisRowListeners(this, this.vTaskList[i].getListChildRow(), vTmpRow);
                 var vTmpCell = draw_utils_1.newNode(vTmpRow, "td", null, "gtaskcell gtaskcellmile", null, vColWidth, null, null, null);
-                console.log("vTmpCell: ", vTmpCell);
                 vTmpDiv_1 = draw_utils_1.newNode(vTmpCell, "div", null, "gtaskcelldiv", "\u00A0\u00A0");
-                console.log("vTmpDiv: ", vTmpDiv_1);
                 vTmpDiv_1 = draw_utils_1.newNode(vTmpDiv_1, "div", this.vDivId + "bardiv_" + vID, "gtaskbarcontainer", null, 12, vTaskLeftPx_1 + vTaskRightPx - 6);
-                console.log("vTmpDiv: ", vTmpDiv_1);
                 this.vTaskList[i].setBarDiv(vTmpDiv_1);
-                console.log("Task Bar Div: ", this.vTaskList[1].getBarDiv());
                 var vTmpDiv2 = draw_utils_1.newNode(vTmpDiv_1, "div", this.vDivId + "taskbar_" + vID, this.vTaskList[i].getClass(), null, 12);
-                console.log("vTmpDiv2: ", vTmpDiv2);
                 this.vTaskList[i].setTaskDiv(vTmpDiv2);
-                console.log("Task Task Div: ", this.vTaskList[1].getTaskDiv());
                 if (this.vTaskList[i].getCompVal() < 100) {
                     vTmpDiv2.appendChild(document.createTextNode("\u25CA"));
-                    console.log("vTmpDiv2: ", vTmpDiv2);
                 }
                 else {
                     vTmpDiv2 = draw_utils_1.newNode(vTmpDiv2, "div", null, "gmilediamond");
-                    console.log("vTmpDiv2: ", vTmpDiv2);
                     draw_utils_1.newNode(vTmpDiv2, "div", null, "gmdtop");
                     draw_utils_1.newNode(vTmpDiv2, "div", null, "gmdbottom");
                 }
                 vCaptClass = "gmilecaption";
-                console.log("vCaptClass: ", vCaptClass);
                 if (!vSingleCell && !vComb) {
                     this.drawColsChart(vNumCols, vTmpRow, taskCellWidth, vMinDate, vMaxDate);
                 }
             }
             else {
                 var vTaskWidth = vTaskRightPx;
-                console.log("vTaskWidth: ", vTaskWidth);
                 // Draw Group Bar which has outer div with inner group div
                 // and several small divs to left and right to create angled-end indicators
                 if (this.vTaskList[i].getGroup()) {
@@ -581,10 +559,8 @@ exports.GanttChart = function (pDiv, pFormat) {
                         vTaskWidth > this.vMinGpLen && vTaskWidth < this.vMinGpLen * 2
                             ? this.vMinGpLen * 2
                             : vTaskWidth; // Expand to show two end points
-                    console.log("vTaskWidth: ", vTaskWidth);
                     vTaskWidth =
                         vTaskWidth < this.vMinGpLen ? this.vMinGpLen : vTaskWidth; // expand to show one end point
-                    console.log("vTaskWidth: ", vTaskWidth);
                     var vTmpDivCell = void 0, vTmpRow = void 0;
                     if (vComb) {
                         vTmpDivCell = vTmpDiv_1 = this.vTaskList[i].getParItem().getCellDiv();
@@ -643,115 +619,15 @@ exports.GanttChart = function (pDiv, pFormat) {
                             this.drawColsChart(vNumCols, vTmpRow, taskCellWidth, vMinDate, vMaxDate);
                         }
                     }
-                    // const vTmpRow = newNode(
-                    //   vTmpTBody,
-                    //   "tr",
-                    //   this.vDivId + "childrow_" + vID,
-                    //   (this.vTaskList[i].getGroup() == 2
-                    //     ? "glineitem gitem"
-                    //     : "ggroupitem ggroup") + this.vFormat,
-                    //   null,
-                    //   null,
-                    //   null,
-                    //   this.vTaskList[i].getVisible() == 0 ? "none" : null
-                    // );
-                    // console.log("vTmpRow: ", vTmpRow);
-                    // this.vTaskList[i].setChildRow(vTmpRow);
-                    // console.log("Task Child Row: ", this.vTaskList[i].getChildRow());
-                    // addThisRowListeners(
-                    //   this,
-                    //   this.vTaskList[i].getListChildRow(),
-                    //   vTmpRow
-                    // );
-                    // const vTmpCell = newNode(
-                    //   vTmpRow,
-                    //   "td",
-                    //   null,
-                    //   "gtaskcell gtaskcellbar",
-                    //   null,
-                    //   vColWidth,
-                    //   null,
-                    //   null
-                    // );
-                    // console.log("vTmpCell: ", vTmpCell);
-                    // vTmpDiv = newNode(
-                    //   vTmpCell,
-                    //   "div",
-                    //   null,
-                    //   "gtaskcelldiv",
-                    //   "\u00A0\u00A0"
-                    // );
-                    // console.log("vTmpDiv: ", vTmpDiv);
-                    // this.vTaskList[i].setCellDiv(vTmpDiv);
-                    // console.log("Task Cell Div: ", this.vTaskList[i].getCellDiv());
-                    // if (this.vTaskList[i].getGroup() == 1) {
-                    //   vTmpDiv = newNode(
-                    //     vTmpDiv,
-                    //     "div",
-                    //     this.vDivId + "bardiv_" + vID,
-                    //     "gtaskbarcontainer",
-                    //     null,
-                    //     vTaskWidth,
-                    //     vTaskLeftPx
-                    //   );
-                    //   console.log("vTmpDiv: ", vTmpDiv);
-                    //   this.vTaskList[i].setBarDiv(vTmpDiv);
-                    //   console.log("Task Bar Div: ", this.vTaskList[i].getBarDiv());
-                    //   const vTmpDiv2 = newNode(
-                    //     vTmpDiv,
-                    //     "div",
-                    //     this.vDivId + "taskbar_" + vID,
-                    //     this.vTaskList[i].getClass(),
-                    //     null,
-                    //     vTaskWidth
-                    //   );
-                    //   console.log("vTmpDiv2: ", vTmpDiv2);
-                    //   this.vTaskList[i].setTaskDiv(vTmpDiv2);
-                    //   console.log("Task Task Div: ", this.vTaskList[i].getTaskDiv());
-                    //   newNode(
-                    //     vTmpDiv2,
-                    //     "div",
-                    //     this.vDivId + "complete_" + vID,
-                    //     this.vTaskList[i].getClass() + "complete",
-                    //     null,
-                    //     this.vTaskList[i].getCompStr()
-                    //   );
-                    //   newNode(
-                    //     vTmpDiv,
-                    //     "div",
-                    //     null,
-                    //     this.vTaskList[i].getClass() + "endpointleft"
-                    //   );
-                    //   if (vTaskWidth >= this.vMinGpLen * 2)
-                    //     newNode(
-                    //       vTmpDiv,
-                    //       "div",
-                    //       null,
-                    //       this.vTaskList[i].getClass() + "endpointright"
-                    //     );
-                    //   vCaptClass = "ggroupcaption";
-                    //   console.log("vCaptClass: ", vCaptClass);
-                    // }
-                    // if (!vSingleCell && !vComb) {
-                    //   this.drawColsChart(
-                    //     vNumCols,
-                    //     vTmpRow,
-                    //     taskCellWidth,
-                    //     vMinDate,
-                    //     vMaxDate
-                    //   );
-                    // }
                 }
                 else {
                     vTaskWidth = vTaskWidth <= 0 ? 1 : vTaskWidth;
-                    console.log("vTaskWidth: ", vTaskWidth);
                     /**
                      * DRAW THE BOXES FOR GANTT
                      */
                     var vTmpDivCell = void 0, vTmpRow = void 0;
                     if (vComb) {
                         vTmpDivCell = vTmpDiv_1 = this.vTaskList[i].getParItem().getCellDiv();
-                        console.log("vTmpDivCell: ", vTmpDivCell);
                     }
                     else {
                         // Draw Task Bar which has colored bar div
@@ -765,33 +641,24 @@ exports.GanttChart = function (pDiv, pFormat) {
                                 Date.parse(this.vTaskList[i].getStart()) !==
                                     Date.parse(this.vTaskList[i].getPlanStart())) {
                                 differentDatesHighlight = "gitemdifferent ";
-                                console.log("differentDatesHighlight: ", differentDatesHighlight);
                             }
                         vTmpRow = draw_utils_1.newNode(vTmpTBody, "tr", this.vDivId + "childrow_" + vID, "glineitem " + differentDatesHighlight + "gitem" + this.vFormat, null, null, null, this.vTaskList[i].getVisible() == 0 ? "none" : null);
-                        console.log("vTmpRow: ", vTmpRow);
                         this.vTaskList[i].setChildRow(vTmpRow);
-                        console.log("Task Child Row: ", this.vTaskList[i].getChildRow());
                         events_1.addThisRowListeners(this, this.vTaskList[i].getListChildRow(), vTmpRow);
                         var vTmpCell = draw_utils_1.newNode(vTmpRow, "td", null, "gtaskcell gtaskcellcolorbar", null, taskCellWidth, null, null);
-                        console.log("vTmpCell: ", vTmpCell);
                         vTmpDivCell = vTmpDiv_1 = draw_utils_1.newNode(vTmpCell, "div", null, "gtaskcelldiv", "\u00A0\u00A0");
-                        console.log("vTmpDivCell: ", vTmpDivCell);
                     }
                     // DRAW TASK BAR
                     vTmpDiv_1 = draw_utils_1.newNode(vTmpDiv_1, "div", this.vDivId + "bardiv_" + vID, "gtaskbarcontainer", null, vTaskWidth, vTaskLeftPx_1);
-                    console.log("vTmpDiv: ", vTmpDiv_1);
                     this.vTaskList[i].setBarDiv(vTmpDiv_1);
-                    console.log(" Task Bar Div: ", this.vTaskList[i].getBarDiv());
                     var vTmpDiv2 = void 0;
                     if (this.vTaskList[i].getStartVar()) {
                         // textbar
                         vTmpDiv2 = draw_utils_1.newNode(vTmpDiv_1, "div", this.vDivId + "taskbar_" + vID, this.vTaskList[i].getClass(), null, vTaskWidth);
-                        console.log("vTmpDiv2: ", vTmpDiv2);
                         if (this.vTaskList[i].getBarText()) {
                             draw_utils_1.newNode(vTmpDiv2, "span", this.vDivId + "tasktextbar_" + vID, "textbar", this.vTaskList[i].getBarText(), this.vTaskList[i].getCompRestStr());
                         }
                         this.vTaskList[i].setTaskDiv(vTmpDiv2);
-                        console.log("Task Task Div: ", this.vTaskList[i].getTaskDiv());
                     }
                     // PLANNED
                     // If exist and one of them are different, show plan bar... show if there is no real vStart as well (just plan dates)
@@ -800,11 +667,8 @@ exports.GanttChart = function (pDiv, pFormat) {
                             vTaskPlanRightPx != vTaskRightPx ||
                             !this.vTaskList[i].getStartVar())) {
                         var vTmpPlanDiv = draw_utils_1.newNode(vTmpDivCell, "div", this.vDivId + "bardiv_" + vID, "gtaskbarcontainer gplan", null, vTaskPlanRightPx, vTaskPlanLeftPx);
-                        console.log("vTmpPlanDiv: ", vTmpPlanDiv);
                         var vTmpPlanDiv2 = draw_utils_1.newNode(vTmpPlanDiv, "div", this.vDivId + "taskbar_" + vID, this.vTaskList[i].getPlanClass() + " gplan", null, vTaskPlanRightPx);
-                        console.log("vTmpPlanDiv2: ", vTmpPlanDiv2);
                         this.vTaskList[i].setPlanTaskDiv(vTmpPlanDiv2);
-                        console.log("Task plan div: ", this.vTaskList[i].getPlanTaskDiv());
                     }
                     // and opaque completion div
                     if (vTmpDiv2) {
@@ -813,14 +677,12 @@ exports.GanttChart = function (pDiv, pFormat) {
                     // caption
                     if (vComb) {
                         vTmpItem = this.vTaskList[i].getParItem();
-                        console.log("vTmpItem: ", vTmpItem);
                     }
                     if (!vComb ||
                         (vComb &&
                             this.vTaskList[i].getParItem().getEnd() ==
                                 this.vTaskList[i].getEnd())) {
                         vCaptClass = "gcaption";
-                        console.log("vCaptClass: ", vCaptClass);
                     }
                     // Background cells
                     if (!vSingleCell && !vComb && vTmpRow) {
@@ -844,30 +706,24 @@ exports.GanttChart = function (pDiv, pFormat) {
                         vCaptionStr = vTmpItem.getCompStr();
                         break;
                 }
-                console.log("vCaptionStr: ", vCaptionStr);
                 draw_utils_1.newNode(vTmpDiv_1, "div", null, vCaptClass, vCaptionStr, 120, vCaptClass == "gmilecaption" ? 12 : 0);
             }
             // Add Task Info div for tooltip
             if (this.vTaskList[i].getTaskDiv() && vTmpDiv_1) {
                 var vTmpDiv2 = draw_utils_1.newNode(vTmpDiv_1, "div", this.vDivId + "tt" + vID, null, null, null, null, "none");
-                console.log("vTmpDiv2: ", vTmpDiv2);
                 var _a = this.createTaskInfo(this.vTaskList[i], this.vTooltipTemplate), component = _a.component, callback = _a.callback;
                 vTmpDiv2.appendChild(component);
-                console.log("vTmpDiv2: ", vTmpDiv2);
                 events_1.addTooltipListeners(this, this.vTaskList[i].getTaskDiv(), vTmpDiv2, callback);
             }
             // Add Plan Task Info div for tooltip
             if (this.vTaskList[i].getPlanTaskDiv() && vTmpDiv_1) {
                 var vTmpDiv2 = draw_utils_1.newNode(vTmpDiv_1, "div", this.vDivId + "tt" + vID, null, null, null, null, "none");
-                console.log("vTmpDiv2: ", vTmpDiv2);
                 var _b = this.createTaskInfo(this.vTaskList[i], this.vTooltipTemplate), component = _b.component, callback = _b.callback;
                 vTmpDiv2.appendChild(component);
-                console.log("vTmpDiv2: ", vTmpDiv2);
                 events_1.addTooltipListeners(this, this.vTaskList[i].getPlanTaskDiv(), vTmpDiv2, callback);
             }
         }
         // ------------------------------------------------------------------------------------------/
-        console.log("vTaskList: ", this.vTaskList);
         // Include the footer with the days/week/month...
         if (vSingleCell) {
             var vTmpTFootTRow = draw_utils_1.newNode(vTmpTFoot, "tr");
@@ -1074,6 +930,18 @@ exports.GanttChart = function (pDiv, pFormat) {
             this.vEvents.afterDraw();
         }
     };
+    setTimeout(function () {
+        var taskArea = document.getElementById(_this.vDivId + "gchartbody") ||
+            document.querySelector(".gchartgrid.gcontainercol");
+        console.log("taskArea: ", taskArea);
+        if (taskArea) {
+            events_1.addListener("wheel", events_1.handleWheelScroll.bind(_this), taskArea);
+            console.log("Elemento da área de tarefas encontrado:", taskArea); // Para debug
+        }
+        else {
+            console.error("Elemento não encontrado. Verifique o ID e classes no DOM.");
+        }
+    }, 100);
     if (this.vDiv &&
         this.vDiv.nodeName &&
         this.vDiv.nodeName.toLowerCase() == "div")
@@ -1350,7 +1218,7 @@ exports.DrawDependencies = function (vDebug) {
 },{}],5:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.addListenerDependencies = exports.addListenerInputCell = exports.addListenerClickCell = exports.addScrollListeners = exports.addFormatListeners = exports.addFolderListeners = exports.updateGridHeaderWidth = exports.addThisRowListeners = exports.addTooltipListeners = exports.syncScroll = exports.removeListener = exports.addListener = exports.showToolTip = exports.mouseOut = exports.mouseOver = exports.show = exports.hide = exports.folder = void 0;
+exports.addListenerDependencies = exports.addListenerInputCell = exports.addListenerClickCell = exports.addScrollListeners = exports.addFormatListeners = exports.addFolderListeners = exports.updateGridHeaderWidth = exports.addThisRowListeners = exports.addTooltipListeners = exports.syncScroll = exports.removeListener = exports.addListener = exports.handleWheelScroll = exports.showToolTip = exports.mouseOut = exports.mouseOver = exports.show = exports.hide = exports.folder = void 0;
 var general_utils_1 = require("./utils/general_utils");
 // Function to open/close and hide/show children of specified task
 exports.folder = function (pID, ganttObj) {
@@ -1362,29 +1230,29 @@ exports.folder = function (pID, ganttObj) {
                 vList[i].setOpen(0);
                 exports.hide(pID, ganttObj);
                 if (general_utils_1.isIE())
-                    vList[i].getGroupSpan().innerText = '+';
+                    vList[i].getGroupSpan().innerText = "+";
                 else
-                    vList[i].getGroupSpan().textContent = '+';
+                    vList[i].getGroupSpan().textContent = "+";
             }
             else {
                 vList[i].setOpen(1);
                 exports.show(pID, 1, ganttObj);
                 if (general_utils_1.isIE())
-                    vList[i].getGroupSpan().innerText = '-';
+                    vList[i].getGroupSpan().innerText = "-";
                 else
-                    vList[i].getGroupSpan().textContent = '-';
+                    vList[i].getGroupSpan().textContent = "-";
             }
         }
     }
     var bd;
     if (this.vDebug) {
         bd = new Date();
-        console.info('after drawDependency', bd);
+        console.info("after drawDependency", bd);
     }
     ganttObj.DrawDependencies(this.vDebug);
     if (this.vDebug) {
         var ad = new Date();
-        console.info('after drawDependency', ad, (ad.getTime() - bd.getTime()));
+        console.info("after drawDependency", ad, ad.getTime() - bd.getTime());
     }
 };
 exports.hide = function (pID, ganttObj) {
@@ -1396,9 +1264,9 @@ exports.hide = function (pID, ganttObj) {
             // it's unlikely but if the task list has been updated since
             // the chart was drawn some of the rows may not exist
             if (vList[i].getListChildRow())
-                vList[i].getListChildRow().style.display = 'none';
+                vList[i].getListChildRow().style.display = "none";
             if (vList[i].getChildRow())
-                vList[i].getChildRow().style.display = 'none';
+                vList[i].getChildRow().style.display = "none";
             vList[i].setVisible(0);
             if (vList[i].getGroup())
                 exports.hide(vID, ganttObj);
@@ -1409,7 +1277,7 @@ exports.hide = function (pID, ganttObj) {
 exports.show = function (pID, pTop, ganttObj) {
     var vList = ganttObj.getList();
     var vID = 0;
-    var vState = '';
+    var vState = "";
     for (var i = 0; i < vList.length; i++) {
         if (vList[i].getParent() == pID) {
             if (!vList[i].getParItem()) {
@@ -1428,17 +1296,17 @@ exports.show = function (pID, pTop, ganttObj) {
         if (vList[i].getParent() == pID) {
             var vChgState = false;
             vID = vList[i].getID();
-            if (pTop == 1 && vState == '+')
+            if (pTop == 1 && vState == "+")
                 vChgState = true;
-            else if (vState == '-')
+            else if (vState == "-")
                 vChgState = true;
             else if (vList[i].getParItem() && vList[i].getParItem().getGroup() == 2)
                 vList[i].setVisible(1);
             if (vChgState) {
                 if (vList[i].getListChildRow())
-                    vList[i].getListChildRow().style.display = '';
+                    vList[i].getListChildRow().style.display = "";
                 if (vList[i].getChildRow())
-                    vList[i].getChildRow().style.display = '';
+                    vList[i].getChildRow().style.display = "";
                 vList[i].setVisible(1);
             }
             if (vList[i].getGroup())
@@ -1448,42 +1316,50 @@ exports.show = function (pID, pTop, ganttObj) {
 };
 exports.mouseOver = function (pObj1, pObj2) {
     if (this.getUseRowHlt()) {
-        pObj1.className += ' gitemhighlight';
-        pObj2.className += ' gitemhighlight';
+        pObj1.className += " gitemhighlight";
+        pObj2.className += " gitemhighlight";
     }
 };
 exports.mouseOut = function (pObj1, pObj2) {
     if (this.getUseRowHlt()) {
-        pObj1.className = pObj1.className.replace(/(?:^|\s)gitemhighlight(?!\S)/g, '');
-        pObj2.className = pObj2.className.replace(/(?:^|\s)gitemhighlight(?!\S)/g, '');
+        pObj1.className = pObj1.className.replace(/(?:^|\s)gitemhighlight(?!\S)/g, "");
+        pObj2.className = pObj2.className.replace(/(?:^|\s)gitemhighlight(?!\S)/g, "");
     }
 };
 exports.showToolTip = function (pGanttChartObj, e, pContents, pWidth, pTimer) {
-    var vTtDivId = pGanttChartObj.getDivId() + 'JSGanttToolTip';
+    var vTtDivId = pGanttChartObj.getDivId() + "JSGanttToolTip";
     var vMaxW = 500;
     var vMaxAlpha = 100;
     var vShowing = pContents.id;
     if (pGanttChartObj.getUseToolTip()) {
         if (pGanttChartObj.vTool == null) {
-            pGanttChartObj.vTool = document.createElement('div');
+            pGanttChartObj.vTool = document.createElement("div");
             pGanttChartObj.vTool.id = vTtDivId;
-            pGanttChartObj.vTool.className = 'JSGanttToolTip';
-            pGanttChartObj.vTool.vToolCont = document.createElement('div');
-            pGanttChartObj.vTool.vToolCont.id = vTtDivId + 'cont';
-            pGanttChartObj.vTool.vToolCont.className = 'JSGanttToolTipcont';
-            pGanttChartObj.vTool.vToolCont.setAttribute('showing', '');
+            pGanttChartObj.vTool.className = "JSGanttToolTip";
+            pGanttChartObj.vTool.vToolCont = document.createElement("div");
+            pGanttChartObj.vTool.vToolCont.id = vTtDivId + "cont";
+            pGanttChartObj.vTool.vToolCont.className = "JSGanttToolTipcont";
+            pGanttChartObj.vTool.vToolCont.setAttribute("showing", "");
             pGanttChartObj.vTool.appendChild(pGanttChartObj.vTool.vToolCont);
             document.body.appendChild(pGanttChartObj.vTool);
             pGanttChartObj.vTool.style.opacity = 0;
-            pGanttChartObj.vTool.setAttribute('currentOpacity', 0);
-            pGanttChartObj.vTool.setAttribute('fadeIncrement', 10);
-            pGanttChartObj.vTool.setAttribute('moveSpeed', 10);
-            pGanttChartObj.vTool.style.filter = 'alpha(opacity=0)';
-            pGanttChartObj.vTool.style.visibility = 'hidden';
-            pGanttChartObj.vTool.style.left = Math.floor(((e) ? e.clientX : window.event.clientX) / 2) + 'px';
-            pGanttChartObj.vTool.style.top = Math.floor(((e) ? e.clientY : window.event.clientY) / 2) + 'px';
-            this.addListener('mouseover', function () { clearTimeout(pGanttChartObj.vTool.delayTimeout); }, pGanttChartObj.vTool);
-            this.addListener('mouseout', function () { general_utils_1.delayedHide(pGanttChartObj, pGanttChartObj.vTool, pTimer); }, pGanttChartObj.vTool);
+            pGanttChartObj.vTool.setAttribute("currentOpacity", 0);
+            pGanttChartObj.vTool.setAttribute("fadeIncrement", 10);
+            pGanttChartObj.vTool.setAttribute("moveSpeed", 10);
+            pGanttChartObj.vTool.style.filter = "alpha(opacity=0)";
+            pGanttChartObj.vTool.style.visibility = "hidden";
+            pGanttChartObj.vTool.style.left =
+                Math.floor((e ? e.clientX : window.event.clientX) / 2) +
+                    "px";
+            pGanttChartObj.vTool.style.top =
+                Math.floor((e ? e.clientY : window.event.clientY) / 2) +
+                    "px";
+            this.addListener("mouseover", function () {
+                clearTimeout(pGanttChartObj.vTool.delayTimeout);
+            }, pGanttChartObj.vTool);
+            this.addListener("mouseout", function () {
+                general_utils_1.delayedHide(pGanttChartObj, pGanttChartObj.vTool, pTimer);
+            }, pGanttChartObj.vTool);
         }
         clearTimeout(pGanttChartObj.vTool.delayTimeout);
         var newHTML = pContents.innerHTML;
@@ -1493,42 +1369,67 @@ exports.showToolTip = function (pGanttChartObj, e, pContents, pWidth, pTimer) {
             general_utils_1.stripIds(pGanttChartObj.vTool.vToolCont);
             pGanttChartObj.vTool.vToolCont.setAttribute("content", newHTML);
         }
-        if (pGanttChartObj.vTool.vToolCont.getAttribute('showing') != vShowing || pGanttChartObj.vTool.style.visibility != 'visible') {
-            if (pGanttChartObj.vTool.vToolCont.getAttribute('showing') != vShowing) {
-                pGanttChartObj.vTool.vToolCont.setAttribute('showing', vShowing);
+        if (pGanttChartObj.vTool.vToolCont.getAttribute("showing") != vShowing ||
+            pGanttChartObj.vTool.style.visibility != "visible") {
+            if (pGanttChartObj.vTool.vToolCont.getAttribute("showing") != vShowing) {
+                pGanttChartObj.vTool.vToolCont.setAttribute("showing", vShowing);
             }
-            pGanttChartObj.vTool.style.visibility = 'visible';
+            pGanttChartObj.vTool.style.visibility = "visible";
             // Rather than follow the mouse just have it stay put
             general_utils_1.updateFlyingObj(e, pGanttChartObj, pTimer);
-            pGanttChartObj.vTool.style.width = (pWidth) ? pWidth + 'px' : 'auto';
+            pGanttChartObj.vTool.style.width = pWidth ? pWidth + "px" : "auto";
             if (!pWidth && general_utils_1.isIE()) {
                 pGanttChartObj.vTool.style.width = pGanttChartObj.vTool.offsetWidth;
             }
             if (pGanttChartObj.vTool.offsetWidth > vMaxW) {
-                pGanttChartObj.vTool.style.width = vMaxW + 'px';
+                pGanttChartObj.vTool.style.width = vMaxW + "px";
             }
         }
         if (pGanttChartObj.getUseFade()) {
             clearInterval(pGanttChartObj.vTool.fadeInterval);
-            pGanttChartObj.vTool.fadeInterval = setInterval(function () { general_utils_1.fadeToolTip(1, pGanttChartObj.vTool, vMaxAlpha); }, pTimer);
+            pGanttChartObj.vTool.fadeInterval = setInterval(function () {
+                general_utils_1.fadeToolTip(1, pGanttChartObj.vTool, vMaxAlpha);
+            }, pTimer);
         }
         else {
             pGanttChartObj.vTool.style.opacity = vMaxAlpha * 0.01;
-            pGanttChartObj.vTool.style.filter = 'alpha(opacity=' + vMaxAlpha + ')';
+            pGanttChartObj.vTool.style.filter = "alpha(opacity=" + vMaxAlpha + ")";
         }
     }
 };
+exports.handleWheelScroll = function (event) {
+    // Filtrar scrolls horizontais e verificar a tecla Shift
+    if (event.deltaY !== 0 && event.deltaX === 0 && !event.shiftKey) {
+        event.preventDefault(); // Impedir o comportamento padrão do scroll
+        var formats = this.vFormatArr;
+        var currentFormatIndex = formats.indexOf(this.vFormat);
+        var newFormatIndex = void 0;
+        if (event.deltaY > 0) {
+            // Scroll para baixo
+            newFormatIndex = (currentFormatIndex + 1) % formats.length;
+        }
+        else {
+            // Scroll para cima
+            newFormatIndex =
+                (currentFormatIndex - 1 + formats.length) % formats.length;
+        }
+        var newFormat = formats[newFormatIndex];
+        general_utils_1.changeFormat(newFormat, this);
+    }
+}.bind(this);
 exports.addListener = function (eventName, handler, control) {
+    if (eventName === "wheel")
+        console.log("Adicionou a função: ", eventName);
     // Check if control is a string
     if (control === String(control))
         control = general_utils_1.findObj(control);
-    if (control.addEventListener) //Standard W3C
-     {
+    if (control.addEventListener) {
+        //Standard W3C
         return control.addEventListener(eventName, handler, false);
     }
-    else if (control.attachEvent) //IExplore
-     {
-        return control.attachEvent('on' + eventName, handler);
+    else if (control.attachEvent) {
+        //IExplore
+        return control.attachEvent("on" + eventName, handler);
     }
     else {
         return false;
@@ -1544,7 +1445,7 @@ exports.removeListener = function (eventName, handler, control) {
     }
     else if (control.detachEvent) {
         //IExplore
-        return control.attachEvent('on' + eventName, handler);
+        return control.attachEvent("on" + eventName, handler);
     }
     else {
         return false;
@@ -1566,12 +1467,12 @@ exports.syncScroll = function (elements, attrName) {
     }
     for (var _i = 0, elements_1 = elements; _i < elements_1.length; _i++) {
         var el = elements_1[_i];
-        el.addEventListener('scroll', scrollEvent);
+        el.addEventListener("scroll", scrollEvent);
     }
 };
 exports.addTooltipListeners = function (pGanttChart, pObj1, pObj2, callback) {
     var isShowingTooltip = false;
-    exports.addListener('mouseover', function (e) {
+    exports.addListener("mouseover", function (e) {
         if (isShowingTooltip || !callback) {
             exports.showToolTip(pGanttChart, e, pObj2, null, pGanttChart.getTimer());
         }
@@ -1581,17 +1482,19 @@ exports.addTooltipListeners = function (pGanttChart, pObj1, pObj2, callback) {
             exports.showToolTip(pGanttChart, e, pObj2, null, pGanttChart.getTimer());
             if (promise && promise.then) {
                 promise.then(function () {
-                    if (pGanttChart.vTool.vToolCont.getAttribute('showing') === pObj2.id &&
-                        pGanttChart.vTool.style.visibility === 'visible') {
+                    if (pGanttChart.vTool.vToolCont.getAttribute("showing") ===
+                        pObj2.id &&
+                        pGanttChart.vTool.style.visibility === "visible") {
                         exports.showToolTip(pGanttChart, e, pObj2, null, pGanttChart.getTimer());
                     }
                 });
             }
         }
     }, pObj1);
-    exports.addListener('mouseout', function (e) {
+    exports.addListener("mouseout", function (e) {
         var outTo = e.relatedTarget;
-        if (general_utils_1.isParentElementOrSelf(outTo, pObj1) || (pGanttChart.vTool && general_utils_1.isParentElementOrSelf(outTo, pGanttChart.vTool))) {
+        if (general_utils_1.isParentElementOrSelf(outTo, pObj1) ||
+            (pGanttChart.vTool && general_utils_1.isParentElementOrSelf(outTo, pGanttChart.vTool))) {
             // not actually out
         }
         else {
@@ -1601,10 +1504,18 @@ exports.addTooltipListeners = function (pGanttChart, pObj1, pObj2, callback) {
     }, pObj1);
 };
 exports.addThisRowListeners = function (pGanttChart, pObj1, pObj2) {
-    exports.addListener('mouseover', function () { pGanttChart.mouseOver(pObj1, pObj2); }, pObj1);
-    exports.addListener('mouseover', function () { pGanttChart.mouseOver(pObj1, pObj2); }, pObj2);
-    exports.addListener('mouseout', function () { pGanttChart.mouseOut(pObj1, pObj2); }, pObj1);
-    exports.addListener('mouseout', function () { pGanttChart.mouseOut(pObj1, pObj2); }, pObj2);
+    exports.addListener("mouseover", function () {
+        pGanttChart.mouseOver(pObj1, pObj2);
+    }, pObj1);
+    exports.addListener("mouseover", function () {
+        pGanttChart.mouseOver(pObj1, pObj2);
+    }, pObj2);
+    exports.addListener("mouseout", function () {
+        pGanttChart.mouseOut(pObj1, pObj2);
+    }, pObj1);
+    exports.addListener("mouseout", function () {
+        pGanttChart.mouseOut(pObj1, pObj2);
+    }, pObj2);
 };
 exports.updateGridHeaderWidth = function (pGanttChart) {
     var head = pGanttChart.getChartHead();
@@ -1616,45 +1527,55 @@ exports.updateGridHeaderWidth = function (pGanttChart) {
         head.style.width = "calc(100% - " + general_utils_1.getScrollbarWidth() + "px)";
     }
     else {
-        head.style.width = '100%';
+        head.style.width = "100%";
     }
 };
 exports.addFolderListeners = function (pGanttChart, pObj, pID) {
-    exports.addListener('click', function () {
+    exports.addListener("click", function () {
         exports.folder(pID, pGanttChart);
         exports.updateGridHeaderWidth(pGanttChart);
     }, pObj);
 };
 exports.addFormatListeners = function (pGanttChart, pFormat, pObj) {
-    exports.addListener('click', function () { general_utils_1.changeFormat(pFormat, pGanttChart); }, pObj);
+    exports.addListener("click", function () {
+        general_utils_1.changeFormat(pFormat, pGanttChart);
+    }, pObj);
 };
 exports.addScrollListeners = function (pGanttChart) {
-    exports.addListener('resize', function () { pGanttChart.getChartHead().scrollLeft = pGanttChart.getChartBody().scrollLeft; }, window);
-    exports.addListener('resize', function () {
-        pGanttChart.getListBody().scrollTop = pGanttChart.getChartBody().scrollTop;
+    exports.addListener("resize", function () {
+        pGanttChart.getChartHead().scrollLeft =
+            pGanttChart.getChartBody().scrollLeft;
+    }, window);
+    exports.addListener("resize", function () {
+        pGanttChart.getListBody().scrollTop =
+            pGanttChart.getChartBody().scrollTop;
     }, window);
 };
 exports.addListenerClickCell = function (vTmpCell, vEvents, task, column) {
-    exports.addListener('click', function (e) {
-        if (e.target.classList.contains('gfoldercollapse') === false &&
-            vEvents[column] && typeof vEvents[column] === 'function') {
+    exports.addListener("click", function (e) {
+        if (e.target.classList.contains("gfoldercollapse") === false &&
+            vEvents[column] &&
+            typeof vEvents[column] === "function") {
             vEvents[column](task, e, vTmpCell, column);
         }
     }, vTmpCell);
 };
 exports.addListenerInputCell = function (vTmpCell, vEventsChange, callback, tasks, index, column, draw, event) {
     if (draw === void 0) { draw = null; }
-    if (event === void 0) { event = 'blur'; }
+    if (event === void 0) { event = "blur"; }
     var task = tasks[index];
-    if (vTmpCell.children[0] && vTmpCell.children[0].children && vTmpCell.children[0].children[0]) {
+    if (vTmpCell.children[0] &&
+        vTmpCell.children[0].children &&
+        vTmpCell.children[0].children[0]) {
         var tagName = vTmpCell.children[0].children[0].tagName;
-        var selectInputOrButton = tagName === 'SELECT' || tagName === 'INPUT' || tagName === 'BUTTON';
+        var selectInputOrButton = tagName === "SELECT" || tagName === "INPUT" || tagName === "BUTTON";
         if (selectInputOrButton) {
             exports.addListener(event, function (e) {
                 if (callback) {
                     callback(task, e);
                 }
-                if (vEventsChange[column] && typeof vEventsChange[column] === 'function') {
+                if (vEventsChange[column] &&
+                    typeof vEventsChange[column] === "function") {
                     var q = vEventsChange[column](tasks, task, e, vTmpCell, vColumnsNames[column]);
                     if (q && q.then) {
                         q.then(function (e) { return draw(); });
@@ -1671,23 +1592,25 @@ exports.addListenerInputCell = function (vTmpCell, vEventsChange, callback, task
     }
 };
 exports.addListenerDependencies = function (vLineOptions) {
-    var elements = document.querySelectorAll('.gtaskbarcontainer');
+    var elements = document.querySelectorAll(".gtaskbarcontainer");
     for (var i = 0; i < elements.length; i++) {
         var taskDiv = elements[i];
-        taskDiv.addEventListener('mouseover', function (e) {
+        taskDiv.addEventListener("mouseover", function (e) {
             toggleDependencies(e, vLineOptions);
         });
-        taskDiv.addEventListener('mouseout', function (e) {
+        taskDiv.addEventListener("mouseout", function (e) {
             toggleDependencies(e, vLineOptions);
         });
     }
 };
 var toggleDependencies = function (e, vLineOptions) {
     var target = e.currentTarget;
-    var ids = target.getAttribute('id').split('_');
-    var style = vLineOptions && vLineOptions.borderStyleHover !== undefined ? vLineOptions.hoverStyle : 'groove';
-    if (e.type === 'mouseout') {
-        style = '';
+    var ids = target.getAttribute("id").split("_");
+    var style = vLineOptions && vLineOptions.borderStyleHover !== undefined
+        ? vLineOptions.hoverStyle
+        : "groove";
+    if (e.type === "mouseout") {
+        style = "";
     }
     if (ids.length > 1) {
         var frameZones = Array.from(document.querySelectorAll(".gDepId" + ids[1]));
@@ -1700,23 +1623,23 @@ var toggleDependencies = function (e, vLineOptions) {
     }
 };
 var vColumnsNames = {
-    taskname: 'pName',
-    res: 'pRes',
-    dur: '',
-    comp: 'pComp',
-    start: 'pStart',
-    end: 'pEnd',
-    planstart: 'pPlanStart',
-    planend: 'pPlanEnd',
-    link: 'pLink',
-    cost: 'pCost',
-    mile: 'pMile',
-    group: 'pGroup',
-    parent: 'pParent',
-    open: 'pOpen',
-    depend: 'pDepend',
-    caption: 'pCaption',
-    note: 'pNotes'
+    taskname: "pName",
+    res: "pRes",
+    dur: "",
+    comp: "pComp",
+    start: "pStart",
+    end: "pEnd",
+    planstart: "pPlanStart",
+    planend: "pPlanEnd",
+    link: "pLink",
+    cost: "pCost",
+    mile: "pMile",
+    group: "pGroup",
+    parent: "pParent",
+    open: "pOpen",
+    depend: "pDepend",
+    caption: "pCaption",
+    note: "pNotes",
 };
 
 },{"./utils/general_utils":13}],6:[function(require,module,exports){
