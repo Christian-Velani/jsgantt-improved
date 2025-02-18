@@ -13,6 +13,7 @@ import {
   syncScroll,
   updateGridHeaderWidth,
   removeListener,
+  handleWheelScroll,
 } from "./events";
 import {
   calculateCurrentDateOffset,
@@ -1770,6 +1771,7 @@ export const GanttChart = function (pDiv, pFormat) {
     }
 
     this.drawComplete(vMinDate, vColWidth, bd);
+    this.associatMouseWheelEvents();
   };
 
   /**
@@ -1794,6 +1796,20 @@ export const GanttChart = function (pDiv, pFormat) {
 
     if (this.vEvents && this.vEvents.afterDraw) {
       this.vEvents.afterDraw();
+    }
+  };
+
+  this.associatMouseWheelEvents = function () {
+    const taskArea =
+      document.getElementById(this.vDivId + "gchartbody") ||
+      document.querySelector(".gchartgrid.gcontainercol");
+
+    if (taskArea) {
+      addListener(
+        "wheel",
+        (event) => handleWheelScroll.call(this, event),
+        taskArea
+      );
     }
   };
 

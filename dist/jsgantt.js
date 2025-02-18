@@ -26,7 +26,6 @@ var date_utils_1 = require("./utils/date_utils");
  * @param pFormat (required) - used to indicate whether chart should be drawn in "hour", "day", "week", "month", or "quarter" format
  */
 exports.GanttChart = function (pDiv, pFormat) {
-    var _this = this;
     this.vDiv = pDiv;
     this.vFormat = pFormat;
     this.vDivId = null;
@@ -913,6 +912,7 @@ exports.GanttChart = function (pDiv, pFormat) {
             console.info("after DrawDependencies", ad, ad.getTime() - bdd.getTime());
         }
         this.drawComplete(vMinDate, vColWidth, bd);
+        this.associatMouseWheelEvents();
     };
     /**
      * Actions after all the render process
@@ -930,18 +930,14 @@ exports.GanttChart = function (pDiv, pFormat) {
             this.vEvents.afterDraw();
         }
     };
-    setTimeout(function () {
-        var taskArea = document.getElementById(_this.vDivId + "gchartbody") ||
+    this.associatMouseWheelEvents = function () {
+        var _this = this;
+        var taskArea = document.getElementById(this.vDivId + "gchartbody") ||
             document.querySelector(".gchartgrid.gcontainercol");
-        console.log("taskArea: ", taskArea);
         if (taskArea) {
-            events_1.addListener("wheel", events_1.handleWheelScroll.bind(_this), taskArea);
-            console.log("Elemento da área de tarefas encontrado:", taskArea); // Para debug
+            events_1.addListener("wheel", function (event) { return events_1.handleWheelScroll.call(_this, event); }, taskArea);
         }
-        else {
-            console.error("Elemento não encontrado. Verifique o ID e classes no DOM.");
-        }
-    }, 100);
+    };
     if (this.vDiv &&
         this.vDiv.nodeName &&
         this.vDiv.nodeName.toLowerCase() == "div")
@@ -1218,7 +1214,7 @@ exports.DrawDependencies = function (vDebug) {
 },{}],5:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.addListenerDependencies = exports.addListenerInputCell = exports.addListenerClickCell = exports.addScrollListeners = exports.addFormatListeners = exports.addFolderListeners = exports.updateGridHeaderWidth = exports.addThisRowListeners = exports.addTooltipListeners = exports.syncScroll = exports.removeListener = exports.addListener = exports.handleWheelScroll = exports.showToolTip = exports.mouseOut = exports.mouseOver = exports.show = exports.hide = exports.folder = void 0;
+exports.addListenerDependencies = exports.addListenerInputCell = exports.addListenerClickCell = exports.addScrollListeners = exports.addFormatListeners = exports.addFolderListeners = exports.updateGridHeaderWidth = exports.addThisRowListeners = exports.addTooltipListeners = exports.syncScroll = exports.removeListener = exports.addListener = exports.showToolTip = exports.mouseOut = exports.mouseOver = exports.show = exports.handleWheelScroll = exports.hide = exports.folder = void 0;
 var general_utils_1 = require("./utils/general_utils");
 // Function to open/close and hide/show children of specified task
 exports.folder = function (pID, ganttObj) {
@@ -1271,6 +1267,27 @@ exports.hide = function (pID, ganttObj) {
             if (vList[i].getGroup())
                 exports.hide(vID, ganttObj);
         }
+    }
+};
+exports.handleWheelScroll = function (event) {
+    if (event.shiftKey) {
+        // Permitir rolagem horizontal normal quando Shift estiver pressionado
+        return;
+    }
+    event.preventDefault();
+    var delta = Math.sign(event.deltaY);
+    var currentFormat = this.vFormat;
+    var currentIndex = this.vFormatArr.indexOf(currentFormat);
+    var newIndex = currentIndex;
+    if (delta > 0) {
+        newIndex = Math.min(currentIndex + 1, this.vFormatArr.length - 1);
+    }
+    else {
+        newIndex = Math.max(currentIndex - 1, 0);
+    }
+    if (newIndex !== currentIndex) {
+        var newFormat = this.vFormatArr[newIndex];
+        general_utils_1.changeFormat(newFormat, this);
     }
 };
 // Function to show children of specified task
@@ -1397,29 +1414,7 @@ exports.showToolTip = function (pGanttChartObj, e, pContents, pWidth, pTimer) {
         }
     }
 };
-exports.handleWheelScroll = function (event) {
-    // Filtrar scrolls horizontais e verificar a tecla Shift
-    if (event.deltaY !== 0 && event.deltaX === 0 && !event.shiftKey) {
-        event.preventDefault(); // Impedir o comportamento padrão do scroll
-        var formats = this.vFormatArr;
-        var currentFormatIndex = formats.indexOf(this.vFormat);
-        var newFormatIndex = void 0;
-        if (event.deltaY > 0) {
-            // Scroll para baixo
-            newFormatIndex = (currentFormatIndex + 1) % formats.length;
-        }
-        else {
-            // Scroll para cima
-            newFormatIndex =
-                (currentFormatIndex - 1 + formats.length) % formats.length;
-        }
-        var newFormat = formats[newFormatIndex];
-        general_utils_1.changeFormat(newFormat, this);
-    }
-}.bind(this);
 exports.addListener = function (eventName, handler, control) {
-    if (eventName === "wheel")
-        console.log("Adicionou a função: ", eventName);
     // Check if control is a string
     if (control === String(control))
         control = general_utils_1.findObj(control);
