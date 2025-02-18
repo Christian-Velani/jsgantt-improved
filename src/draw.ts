@@ -578,11 +578,13 @@ export const GanttChart = function (pDiv, pFormat) {
           null,
           colspan
         );
+
         vCellContents += formatDateStr(
           vTmpDate,
           this.vDayMajorDateDisplayFormat,
           this.vLangs[this.vLang]
         );
+
         vTmpDate.setDate(vTmpDate.getDate() + 6);
 
         if (this.vShowEndWeekDate == 1)
@@ -1810,8 +1812,8 @@ export const GanttChart = function (pDiv, pFormat) {
 
   this.associatMouseWheelEvents = function () {
     const taskArea =
-      document.getElementById(this.vDivId + "gchartbody") ||
-      document.querySelector(".gchartgrid.gcontainercol");
+      document.getElementById(this.vDivId + "chartTable") ||
+      document.querySelector(".gcharttable");
 
     if (taskArea) {
       addListener(
