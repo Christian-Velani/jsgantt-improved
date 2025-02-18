@@ -242,6 +242,46 @@ export const showToolTip = function (
   }
 };
 
+export function startResize(this: HTMLElement, e: MouseEvent | TouchEvent) {
+  e.preventDefault();
+  const gmain = this.parentElement as HTMLElement;
+
+  // Obter coordenadas corretas para mouse/touch
+  const clientX = e instanceof MouseEvent ? e.clientX : e.touches[0].clientX;
+  const startX = clientX;
+  const startWidth = gmain.getBoundingClientRect().width;
+
+  this.classList.add("resizing");
+
+  // Função unificada para ambos os tipos de evento
+  const doResize = (moveEvent: MouseEvent | TouchEvent) => {
+    moveEvent.preventDefault();
+    const currentX =
+      moveEvent instanceof MouseEvent
+        ? moveEvent.clientX
+        : moveEvent.touches[0].clientX;
+
+    const newWidth = startWidth + (currentX - startX);
+    gmain.style.width = `${newWidth}px`;
+    gmain.dispatchEvent(new CustomEvent("gmain-resize", { detail: newWidth }));
+  };
+
+  const stopResize = () => {
+    // Remover todos os listeners
+    document.removeEventListener("mousemove", doResize);
+    document.removeEventListener("touchmove", doResize);
+    document.removeEventListener("mouseup", stopResize);
+    document.removeEventListener("touchend", stopResize);
+    this.classList.remove("resizing");
+  };
+
+  // Adicionar listeners para ambos os tipos
+  document.addEventListener("mousemove", doResize);
+  document.addEventListener("touchmove", doResize, { passive: false });
+  document.addEventListener("mouseup", stopResize);
+  document.addEventListener("touchend", stopResize);
+}
+
 export const addListener = function (eventName, handler, control) {
   // Check if control is a string
   if (control === String(control)) control = findObj(control);

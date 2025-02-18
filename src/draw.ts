@@ -14,10 +14,11 @@ import {
   updateGridHeaderWidth,
   removeListener,
   handleWheelScroll,
+  startResize,
 } from "./events";
 import {
   calculateCurrentDateOffset,
-  changeFormat,
+  findObj,
   getOffset,
   getScrollbarWidth,
   printChart,
@@ -1670,6 +1671,12 @@ export const GanttChart = function (pDiv, pFormat) {
     vTmpDiv.style.height = this.vTotalHeight;
 
     let leftvTmpDiv = newNode(vTmpDiv, "div", null, "gmain gmainleft");
+    const resizeHandle = newNode(
+      leftvTmpDiv,
+      "div",
+      "gmain-resize-handle",
+      "resize-handle"
+    );
     leftvTmpDiv.appendChild(vLeftHeader);
     // leftvTmpDiv.appendChild(vLeftTable);
 
@@ -1772,6 +1779,8 @@ export const GanttChart = function (pDiv, pFormat) {
 
     this.drawComplete(vMinDate, vColWidth, bd);
     this.associatMouseWheelEvents();
+    addListener("mousedown", startResize, findObj("gmain-resize-handle"));
+    addListener("touchstart", startResize, findObj("gmain-resize-handle"));
   };
 
   /**

@@ -837,6 +837,7 @@ exports.GanttChart = function (pDiv, pFormat) {
         var vTmpDiv = draw_utils_1.newNode(this.vDiv, "div", null, "gchartcontainer");
         vTmpDiv.style.height = this.vTotalHeight;
         var leftvTmpDiv = draw_utils_1.newNode(vTmpDiv, "div", null, "gmain gmainleft");
+        var resizeHandle = draw_utils_1.newNode(leftvTmpDiv, "div", "gmain-resize-handle", "resize-handle");
         leftvTmpDiv.appendChild(vLeftHeader);
         // leftvTmpDiv.appendChild(vLeftTable);
         var rightvTmpDiv = draw_utils_1.newNode(vTmpDiv, "div", null, "gmain gmainright");
@@ -913,6 +914,8 @@ exports.GanttChart = function (pDiv, pFormat) {
         }
         this.drawComplete(vMinDate, vColWidth, bd);
         this.associatMouseWheelEvents();
+        events_1.addListener("mousedown", events_1.startResize, general_utils_1.findObj("gmain-resize-handle"));
+        events_1.addListener("touchstart", events_1.startResize, general_utils_1.findObj("gmain-resize-handle"));
     };
     /**
      * Actions after all the render process
@@ -1214,7 +1217,7 @@ exports.DrawDependencies = function (vDebug) {
 },{}],5:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.addListenerDependencies = exports.addListenerInputCell = exports.addListenerClickCell = exports.addScrollListeners = exports.addFormatListeners = exports.addFolderListeners = exports.updateGridHeaderWidth = exports.addThisRowListeners = exports.addTooltipListeners = exports.syncScroll = exports.removeListener = exports.addListener = exports.showToolTip = exports.mouseOut = exports.mouseOver = exports.show = exports.handleWheelScroll = exports.hide = exports.folder = void 0;
+exports.addListenerDependencies = exports.addListenerInputCell = exports.addListenerClickCell = exports.addScrollListeners = exports.addFormatListeners = exports.addFolderListeners = exports.updateGridHeaderWidth = exports.addThisRowListeners = exports.addTooltipListeners = exports.syncScroll = exports.removeListener = exports.addListener = exports.startResize = exports.showToolTip = exports.mouseOut = exports.mouseOver = exports.show = exports.handleWheelScroll = exports.hide = exports.folder = void 0;
 var general_utils_1 = require("./utils/general_utils");
 // Function to open/close and hide/show children of specified task
 exports.folder = function (pID, ganttObj) {
@@ -1414,6 +1417,40 @@ exports.showToolTip = function (pGanttChartObj, e, pContents, pWidth, pTimer) {
         }
     }
 };
+function startResize(e) {
+    var _this = this;
+    e.preventDefault();
+    var gmain = this.parentElement;
+    // Obter coordenadas corretas para mouse/touch
+    var clientX = e instanceof MouseEvent ? e.clientX : e.touches[0].clientX;
+    var startX = clientX;
+    var startWidth = gmain.getBoundingClientRect().width;
+    this.classList.add("resizing");
+    // Função unificada para ambos os tipos de evento
+    var doResize = function (moveEvent) {
+        moveEvent.preventDefault();
+        var currentX = moveEvent instanceof MouseEvent
+            ? moveEvent.clientX
+            : moveEvent.touches[0].clientX;
+        var newWidth = startWidth + (currentX - startX);
+        gmain.style.width = newWidth + "px";
+        gmain.dispatchEvent(new CustomEvent("gmain-resize", { detail: newWidth }));
+    };
+    var stopResize = function () {
+        // Remover todos os listeners
+        document.removeEventListener("mousemove", doResize);
+        document.removeEventListener("touchmove", doResize);
+        document.removeEventListener("mouseup", stopResize);
+        document.removeEventListener("touchend", stopResize);
+        _this.classList.remove("resizing");
+    };
+    // Adicionar listeners para ambos os tipos
+    document.addEventListener("mousemove", doResize);
+    document.addEventListener("touchmove", doResize, { passive: false });
+    document.addEventListener("mouseup", stopResize);
+    document.addEventListener("touchend", stopResize);
+}
+exports.startResize = startResize;
 exports.addListener = function (eventName, handler, control) {
     // Check if control is a string
     if (control === String(control))
