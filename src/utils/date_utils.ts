@@ -188,21 +188,14 @@ export const parseDateStr = function (pDateStr, pFormatStr) {
 
 export const formatDateStr = function (pDate, pDateFormatArr, pL) {
   // Fix on issue #303 - getXMLTask is passing null as pDates
-  console.log("Começou a função formatDateStr");
-  console.log("pDate: ", pDate);
-  console.log("pDateFormatArr: ", pDateFormatArr);
-  console.log("pL: ", pL);
+
   if (!pDate) {
     return;
   }
   let vDateStr = "";
 
-  console.log("vDateStr: ", vDateStr);
-
   let vYear2Str = pDate.getFullYear().toString().substring(2, 4);
-  console.log("vYear2Str: ", vYear2Str);
   let vMonthStr = pDate.getMonth() + 1 + "";
-  console.log("vMonthStr: ", vMonthStr);
   let vMonthArr = new Array(
     pL["january"],
     pL["february"],
@@ -218,8 +211,6 @@ export const formatDateStr = function (pDate, pDateFormatArr, pL) {
     pL["december"]
   );
 
-  console.log("vMonthArr: ", vMonthArr);
-
   let vDayArr = new Array(
     pL["sunday"],
     pL["monday"],
@@ -229,8 +220,6 @@ export const formatDateStr = function (pDate, pDateFormatArr, pL) {
     pL["friday"],
     pL["saturday"]
   );
-
-  console.log("vDayArr: ", vDayArr);
 
   let vMthArr = new Array(
     pL["jan"],
@@ -247,8 +236,6 @@ export const formatDateStr = function (pDate, pDateFormatArr, pL) {
     pL["dec"]
   );
 
-  console.log("vMthArr: ", vMthArr);
-
   let vDyArr = new Array(
     pL["sun"],
     pL["mon"],
@@ -259,10 +246,7 @@ export const formatDateStr = function (pDate, pDateFormatArr, pL) {
     pL["sat"]
   );
 
-  console.log("vDyArr: ", vDyArr);
-
   for (let i = 0; i < pDateFormatArr.length; i++) {
-    console.log("Verificando: ", pDateFormatArr[i]);
     switch (pDateFormatArr[i]) {
       case "dd":
         if (pDate.getDate() < 10) vDateStr += "0"; // now fall through
