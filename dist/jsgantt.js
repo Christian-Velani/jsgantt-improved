@@ -115,16 +115,24 @@ exports.GanttChart = function (pDiv, pFormat) {
     this.vQuarterMajorDateDisplayFormat = date_utils_1.parseDateFormatStr("yyyy");
     this.vQuarterMinorDateDisplayFormat = date_utils_1.parseDateFormatStr("qq");
     this.vUseFullYear = date_utils_1.parseDateFormatStr("dd/mm/yyyy");
+    // New formats added by Christian
+    this.vTwoDaysMajorDateDisplayFormat = date_utils_1.parseDateFormatStr("dd/mm");
+    this.vTwoDaysMinorDateDisplayFormat = date_utils_1.parseDateFormatStr("dd");
+    this.vTwoWeeksMajorDateDisplayFormat = date_utils_1.parseDateFormatStr("yyyy");
+    this.vTwoWeeksMinorDateDisplayFormat = date_utils_1.parseDateFormatStr("dd/mm");
+    this.vTwoMonthsMajorDateDisplayFormat = date_utils_1.parseDateFormatStr("yyyy");
+    this.vTwoMonthsMinorDateDisplayFormat = date_utils_1.parseDateFormatStr("mm/yyyy");
     this.vCaptionType;
     this.vDepId = 1;
     this.vTaskList = new Array();
-    this.vFormatArr = new Array("hour", "day", "week", "month", "quarter");
+    this.vFormatArr = new Array("hour", "day", "twodays", "week", "twoWeeks", "month", "twoMonths", "quarter");
     this.vMonthDaysArr = new Array(31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31);
     this.vProcessNeeded = true;
     this.vMinGpLen = 8;
     this.vScrollTo = "";
     this.vHourColWidth = 18;
     this.vDayColWidth = 18;
+    this.vTwoDaysColWidth = 20;
     this.vWeekColWidth = 36;
     this.vMonthColWidth = 36;
     this.vQuarterColWidth = 18;
@@ -353,6 +361,29 @@ exports.GanttChart = function (pDiv, pFormat) {
                 draw_utils_1.newNode(vTmpCell, "div", null, null, vCellContents, vColWidth * colspan);
                 vTmpDate.setDate(vTmpDate.getDate() + 1);
             }
+            else if (this.vFormat === "twodays") {
+                var colspan = 4; // Grupo de 2 dias
+                var vTmpCell = draw_utils_1.newNode(vTmpRow, "td", null, vHeaderCellClass, null, null, null, null, colspan);
+                // Data inicial do intervalo
+                vCellContents += date_utils_1.formatDateStr(vTmpDate, this.vTwoDaysMajorDateDisplayFormat, // Ex: "dd/mm"
+                this.vLangs[this.vLang]);
+                // Calcula a data final (dia seguinte)
+                var vEndDate = new Date(vTmpDate);
+                vEndDate.setDate(vEndDate.getDate() + 1);
+                // Verifica se a data final não ultrapassa a data máxima
+                if (vEndDate > vMaxDate) {
+                    vEndDate = vMaxDate; // Limita ao máximo
+                    vCellContents = date_utils_1.formatDateStr(vTmpDate, this.vTwoDaysMajorDateDisplayFormat, this.vLangs[this.vLang]); // Exibe apenas um dia
+                }
+                else {
+                    vCellContents +=
+                        " - " +
+                            date_utils_1.formatDateStr(vEndDate, this.vTwoDaysMajorDateDisplayFormat, this.vLangs[this.vLang]);
+                }
+                draw_utils_1.newNode(vTmpCell, "div", null, null, vCellContents, vColWidth * colspan);
+                // Avança 2 dias para o próximo grupo
+                vTmpDate.setDate(vTmpDate.getDate() + 2);
+            }
             else if (this.vFormat == "week") {
                 var vTmpCell = draw_utils_1.newNode(vTmpRow, "td", null, vHeaderCellClass, null, vColWidth);
                 draw_utils_1.newNode(vTmpCell, "div", null, null, date_utils_1.formatDateStr(vTmpDate, this.vWeekMajorDateDisplayFormat, this.vLangs[this.vLang]), vColWidth);
@@ -408,6 +439,23 @@ exports.GanttChart = function (pDiv, pFormat) {
                     vNumCols++;
                 }
                 vTmpDate.setDate(vTmpDate.getDate() + 1);
+            }
+            else if (this.vFormat === "twodays") {
+                // Verifica se é final de semana
+                if (vTmpDate.getDay() % 6 === 0) {
+                    if (!this.vShowWeekends) {
+                        vTmpDate.setDate(vTmpDate.getDate() + 1);
+                        continue; // Pula se finais de semana estiverem ocultos
+                    }
+                    vMinorHeaderCellClass += "wkend";
+                }
+                if (vTmpDate <= vMaxDate) {
+                    var vTmpCell = draw_utils_1.newNode(vTmpRow, "td", null, vMinorHeaderCellClass);
+                    draw_utils_1.newNode(vTmpCell, "div", null, null, date_utils_1.formatDateStr(vTmpDate, this.vTwoDaysMinorDateDisplayFormat, // Ex: "dd (ddd)"
+                    this.vLangs[this.vLang]), vColWidth);
+                    vNumCols++;
+                }
+                vTmpDate.setDate(vTmpDate.getDate() + 1); // Avança 1 dia
             }
             else if (this.vFormat == "week") {
                 if (vTmpDate <= vMaxDate) {
@@ -801,6 +849,8 @@ exports.GanttChart = function (pDiv, pFormat) {
         // Calculate chart width variables.
         if (this.vFormat == "day")
             vColWidth = this.vDayColWidth;
+        else if (this.vFormat == "twodays")
+            vColWidth = this.vTwoDaysColWidth;
         else if (this.vFormat == "week")
             vColWidth = this.vWeekColWidth;
         else if (this.vFormat == "month")
@@ -3618,207 +3668,500 @@ exports.includeGetSet = function () {
         for (var i = 0; i < keys.length; i++) {
             var key = keys[i];
             var val = options[key];
-            if (key === 'vResources' || key === 'vColumnOrder') {
+            if (key === "vResources" || key === "vColumnOrder") {
                 // ev = `this.set${key.substr(1)}(val)`;
-                this['set' + key.substr(1)](val);
+                this["set" + key.substr(1)](val);
             }
             else if (val instanceof Array) {
                 // ev = `this.set${key.substr(1)}(...val)`;
-                this['set' + key.substr(1)].apply(this, val);
+                this["set" + key.substr(1)].apply(this, val);
             }
             else {
                 // ev = `this.set${key.substr(1)}(val)`;
-                this['set' + key.substr(1)](val);
+                this["set" + key.substr(1)](val);
             }
         }
     };
-    this.setUseFade = function (pVal) { this.vUseFade = pVal; };
-    this.setUseMove = function (pVal) { this.vUseMove = pVal; };
-    this.setUseRowHlt = function (pVal) { this.vUseRowHlt = pVal; };
-    this.setUseToolTip = function (pVal) { this.vUseToolTip = pVal; };
-    this.setUseSort = function (pVal) { this.vUseSort = pVal; };
-    this.setUseSingleCell = function (pVal) { this.vUseSingleCell = pVal * 1; };
+    this.setUseFade = function (pVal) {
+        this.vUseFade = pVal;
+    };
+    this.setUseMove = function (pVal) {
+        this.vUseMove = pVal;
+    };
+    this.setUseRowHlt = function (pVal) {
+        this.vUseRowHlt = pVal;
+    };
+    this.setUseToolTip = function (pVal) {
+        this.vUseToolTip = pVal;
+    };
+    this.setUseSort = function (pVal) {
+        this.vUseSort = pVal;
+    };
+    this.setUseSingleCell = function (pVal) {
+        this.vUseSingleCell = pVal * 1;
+    };
     this.setFormatArr = function () {
-        var vValidFormats = 'hour day week month quarter';
+        var vValidFormats = "hour day twoDays week month quarter";
         this.vFormatArr = new Array();
         for (var i = 0, j = 0; i < arguments.length; i++) {
-            if (vValidFormats.indexOf(arguments[i].toLowerCase()) != -1 && arguments[i].length > 1) {
+            if (vValidFormats.indexOf(arguments[i].toLowerCase()) != -1 &&
+                arguments[i].length > 1) {
                 this.vFormatArr[j++] = arguments[i].toLowerCase();
-                var vRegExp = new RegExp('(?:^|\s)' + arguments[i] + '(?!\S)', 'g');
-                vValidFormats = vValidFormats.replace(vRegExp, '');
+                var vRegExp = new RegExp("(?:^|s)" + arguments[i] + "(?!S)", "g");
+                vValidFormats = vValidFormats.replace(vRegExp, "");
             }
         }
     };
-    this.setShowRes = function (pVal) { this.vShowRes = pVal; };
-    this.setShowDur = function (pVal) { this.vShowDur = pVal; };
-    this.setShowComp = function (pVal) { this.vShowComp = pVal; };
-    this.setShowStartDate = function (pVal) { this.vShowStartDate = pVal; };
-    this.setShowEndDate = function (pVal) { this.vShowEndDate = pVal; };
-    this.setShowPlanStartDate = function (pVal) { this.vShowPlanStartDate = pVal; };
-    this.setShowPlanEndDate = function (pVal) { this.vShowPlanEndDate = pVal; };
-    this.setShowCost = function (pVal) { this.vShowCost = pVal; };
-    this.setShowAddEntries = function (pVal) { this.vShowAddEntries = pVal; };
-    this.setShowTaskInfoRes = function (pVal) { this.vShowTaskInfoRes = pVal; };
-    this.setShowTaskInfoDur = function (pVal) { this.vShowTaskInfoDur = pVal; };
-    this.setShowTaskInfoComp = function (pVal) { this.vShowTaskInfoComp = pVal; };
-    this.setShowTaskInfoStartDate = function (pVal) { this.vShowTaskInfoStartDate = pVal; };
-    this.setShowTaskInfoEndDate = function (pVal) { this.vShowTaskInfoEndDate = pVal; };
-    this.setShowTaskInfoNotes = function (pVal) { this.vShowTaskInfoNotes = pVal; };
-    this.setShowTaskInfoLink = function (pVal) { this.vShowTaskInfoLink = pVal; };
-    this.setShowEndWeekDate = function (pVal) { this.vShowEndWeekDate = pVal; };
-    this.setShowWeekends = function (pVal) { this.vShowWeekends = pVal; };
+    this.setShowRes = function (pVal) {
+        this.vShowRes = pVal;
+    };
+    this.setShowDur = function (pVal) {
+        this.vShowDur = pVal;
+    };
+    this.setShowComp = function (pVal) {
+        this.vShowComp = pVal;
+    };
+    this.setShowStartDate = function (pVal) {
+        this.vShowStartDate = pVal;
+    };
+    this.setShowEndDate = function (pVal) {
+        this.vShowEndDate = pVal;
+    };
+    this.setShowPlanStartDate = function (pVal) {
+        this.vShowPlanStartDate = pVal;
+    };
+    this.setShowPlanEndDate = function (pVal) {
+        this.vShowPlanEndDate = pVal;
+    };
+    this.setShowCost = function (pVal) {
+        this.vShowCost = pVal;
+    };
+    this.setShowAddEntries = function (pVal) {
+        this.vShowAddEntries = pVal;
+    };
+    this.setShowTaskInfoRes = function (pVal) {
+        this.vShowTaskInfoRes = pVal;
+    };
+    this.setShowTaskInfoDur = function (pVal) {
+        this.vShowTaskInfoDur = pVal;
+    };
+    this.setShowTaskInfoComp = function (pVal) {
+        this.vShowTaskInfoComp = pVal;
+    };
+    this.setShowTaskInfoStartDate = function (pVal) {
+        this.vShowTaskInfoStartDate = pVal;
+    };
+    this.setShowTaskInfoEndDate = function (pVal) {
+        this.vShowTaskInfoEndDate = pVal;
+    };
+    this.setShowTaskInfoNotes = function (pVal) {
+        this.vShowTaskInfoNotes = pVal;
+    };
+    this.setShowTaskInfoLink = function (pVal) {
+        this.vShowTaskInfoLink = pVal;
+    };
+    this.setShowEndWeekDate = function (pVal) {
+        this.vShowEndWeekDate = pVal;
+    };
+    this.setShowWeekends = function (pVal) {
+        this.vShowWeekends = pVal;
+    };
     this.setShowSelector = function () {
-        var vValidSelectors = 'top bottom';
+        var vValidSelectors = "top bottom";
         this.vShowSelector = new Array();
         for (var i = 0, j = 0; i < arguments.length; i++) {
-            if (vValidSelectors.indexOf(arguments[i].toLowerCase()) != -1 && arguments[i].length > 1) {
+            if (vValidSelectors.indexOf(arguments[i].toLowerCase()) != -1 &&
+                arguments[i].length > 1) {
                 this.vShowSelector[j++] = arguments[i].toLowerCase();
-                var vRegExp = new RegExp('(?:^|\s)' + arguments[i] + '(?!\S)', 'g');
-                vValidSelectors = vValidSelectors.replace(vRegExp, '');
+                var vRegExp = new RegExp("(?:^|s)" + arguments[i] + "(?!S)", "g");
+                vValidSelectors = vValidSelectors.replace(vRegExp, "");
             }
         }
     };
-    this.setShowDeps = function (pVal) { this.vShowDeps = pVal; };
-    this.setDateInputFormat = function (pVal) { this.vDateInputFormat = pVal; };
-    this.setDateTaskTableDisplayFormat = function (pVal) { this.vDateTaskTableDisplayFormat = date_utils_1.parseDateFormatStr(pVal); };
-    this.setDateTaskDisplayFormat = function (pVal) { this.vDateTaskDisplayFormat = date_utils_1.parseDateFormatStr(pVal); };
-    this.setHourMajorDateDisplayFormat = function (pVal) { this.vHourMajorDateDisplayFormat = date_utils_1.parseDateFormatStr(pVal); };
-    this.setHourMinorDateDisplayFormat = function (pVal) { this.vHourMinorDateDisplayFormat = date_utils_1.parseDateFormatStr(pVal); };
-    this.setDayMajorDateDisplayFormat = function (pVal) { this.vDayMajorDateDisplayFormat = date_utils_1.parseDateFormatStr(pVal); };
-    this.setDayMinorDateDisplayFormat = function (pVal) { this.vDayMinorDateDisplayFormat = date_utils_1.parseDateFormatStr(pVal); };
-    this.setWeekMajorDateDisplayFormat = function (pVal) { this.vWeekMajorDateDisplayFormat = date_utils_1.parseDateFormatStr(pVal); };
-    this.setWeekMinorDateDisplayFormat = function (pVal) { this.vWeekMinorDateDisplayFormat = date_utils_1.parseDateFormatStr(pVal); };
-    this.setMonthMajorDateDisplayFormat = function (pVal) { this.vMonthMajorDateDisplayFormat = date_utils_1.parseDateFormatStr(pVal); };
-    this.setMonthMinorDateDisplayFormat = function (pVal) { this.vMonthMinorDateDisplayFormat = date_utils_1.parseDateFormatStr(pVal); };
-    this.setQuarterMajorDateDisplayFormat = function (pVal) { this.vQuarterMajorDateDisplayFormat = date_utils_1.parseDateFormatStr(pVal); };
-    this.setQuarterMinorDateDisplayFormat = function (pVal) { this.vQuarterMinorDateDisplayFormat = date_utils_1.parseDateFormatStr(pVal); };
-    this.setCaptionType = function (pType) { this.vCaptionType = pType; };
+    this.setShowDeps = function (pVal) {
+        this.vShowDeps = pVal;
+    };
+    this.setDateInputFormat = function (pVal) {
+        this.vDateInputFormat = pVal;
+    };
+    this.setDateTaskTableDisplayFormat = function (pVal) {
+        this.vDateTaskTableDisplayFormat = date_utils_1.parseDateFormatStr(pVal);
+    };
+    this.setDateTaskDisplayFormat = function (pVal) {
+        this.vDateTaskDisplayFormat = date_utils_1.parseDateFormatStr(pVal);
+    };
+    this.setHourMajorDateDisplayFormat = function (pVal) {
+        this.vHourMajorDateDisplayFormat = date_utils_1.parseDateFormatStr(pVal);
+    };
+    this.setHourMinorDateDisplayFormat = function (pVal) {
+        this.vHourMinorDateDisplayFormat = date_utils_1.parseDateFormatStr(pVal);
+    };
+    this.setDayMajorDateDisplayFormat = function (pVal) {
+        this.vDayMajorDateDisplayFormat = date_utils_1.parseDateFormatStr(pVal);
+    };
+    this.setDayMinorDateDisplayFormat = function (pVal) {
+        this.vDayMinorDateDisplayFormat = date_utils_1.parseDateFormatStr(pVal);
+    };
+    this.setTwoDaysMajorDateDisplayFormat = function (pVal) {
+        this.vTwoDaysMajorDateDisplayFormat = date_utils_1.parseDateFormatStr(pVal);
+    };
+    this.setTwoDaysMinorDateDisplayFormat = function (pVal) {
+        this.vTwoDaysMinorDateDisplayFormat = date_utils_1.parseDateFormatStr(pVal);
+    };
+    this.setWeekMajorDateDisplayFormat = function (pVal) {
+        this.vWeekMajorDateDisplayFormat = date_utils_1.parseDateFormatStr(pVal);
+    };
+    this.setWeekMinorDateDisplayFormat = function (pVal) {
+        this.vWeekMinorDateDisplayFormat = date_utils_1.parseDateFormatStr(pVal);
+    };
+    this.setMonthMajorDateDisplayFormat = function (pVal) {
+        this.vMonthMajorDateDisplayFormat = date_utils_1.parseDateFormatStr(pVal);
+    };
+    this.setMonthMinorDateDisplayFormat = function (pVal) {
+        this.vMonthMinorDateDisplayFormat = date_utils_1.parseDateFormatStr(pVal);
+    };
+    this.setQuarterMajorDateDisplayFormat = function (pVal) {
+        this.vQuarterMajorDateDisplayFormat = date_utils_1.parseDateFormatStr(pVal);
+    };
+    this.setQuarterMinorDateDisplayFormat = function (pVal) {
+        this.vQuarterMinorDateDisplayFormat = date_utils_1.parseDateFormatStr(pVal);
+    };
+    this.setCaptionType = function (pType) {
+        this.vCaptionType = pType;
+    };
     this.setFormat = function (pFormat) {
         this.vFormat = pFormat;
         this.Draw();
     };
-    this.setWorkingDays = function (workingDays) { this.vWorkingDays = workingDays; };
-    this.setMinGpLen = function (pMinGpLen) { this.vMinGpLen = pMinGpLen; };
-    this.setScrollTo = function (pDate) { this.vScrollTo = pDate; };
-    this.setHourColWidth = function (pWidth) { this.vHourColWidth = pWidth; };
-    this.setDayColWidth = function (pWidth) { this.vDayColWidth = pWidth; };
-    this.setWeekColWidth = function (pWidth) { this.vWeekColWidth = pWidth; };
-    this.setMonthColWidth = function (pWidth) { this.vMonthColWidth = pWidth; };
-    this.setQuarterColWidth = function (pWidth) { this.vQuarterColWidth = pWidth; };
-    this.setRowHeight = function (pHeight) { this.vRowHeight = pHeight; };
-    this.setLang = function (pLang) { if (this.vLangs[pLang])
-        this.vLang = pLang; };
-    this.setChartBody = function (pDiv) { if (typeof HTMLDivElement !== 'function' || pDiv instanceof HTMLDivElement)
-        this.vChartBody = pDiv; };
-    this.setChartHead = function (pDiv) { if (typeof HTMLDivElement !== 'function' || pDiv instanceof HTMLDivElement)
-        this.vChartHead = pDiv; };
-    this.setListBody = function (pDiv) { if (typeof HTMLDivElement !== 'function' || pDiv instanceof HTMLDivElement)
-        this.vListBody = pDiv; };
-    this.setChartTable = function (pTable) { if (typeof HTMLTableElement !== 'function' || pTable instanceof HTMLTableElement)
-        this.vChartTable = pTable; };
-    this.setLines = function (pDiv) { if (typeof HTMLDivElement !== 'function' || pDiv instanceof HTMLDivElement)
-        this.vLines = pDiv; };
-    this.setLineOptions = function (lineOptions) { this.vLineOptions = lineOptions; };
-    this.setTimer = function (pVal) { this.vTimer = pVal * 1; };
-    this.setTooltipDelay = function (pVal) { this.vTooltipDelay = pVal * 1; };
-    this.setTooltipTemplate = function (pVal) { this.vTooltipTemplate = pVal; };
-    this.setMinDate = function (pVal) { this.vMinDate = pVal; };
-    this.setMaxDate = function (pVal) { this.vMaxDate = pVal; };
+    this.setWorkingDays = function (workingDays) {
+        this.vWorkingDays = workingDays;
+    };
+    this.setMinGpLen = function (pMinGpLen) {
+        this.vMinGpLen = pMinGpLen;
+    };
+    this.setScrollTo = function (pDate) {
+        this.vScrollTo = pDate;
+    };
+    this.setHourColWidth = function (pWidth) {
+        this.vHourColWidth = pWidth;
+    };
+    this.setDayColWidth = function (pWidth) {
+        this.vDayColWidth = pWidth;
+    };
+    this.setWeekColWidth = function (pWidth) {
+        this.vWeekColWidth = pWidth;
+    };
+    this.setMonthColWidth = function (pWidth) {
+        this.vMonthColWidth = pWidth;
+    };
+    this.setQuarterColWidth = function (pWidth) {
+        this.vQuarterColWidth = pWidth;
+    };
+    this.setRowHeight = function (pHeight) {
+        this.vRowHeight = pHeight;
+    };
+    this.setLang = function (pLang) {
+        if (this.vLangs[pLang])
+            this.vLang = pLang;
+    };
+    this.setChartBody = function (pDiv) {
+        if (typeof HTMLDivElement !== "function" || pDiv instanceof HTMLDivElement)
+            this.vChartBody = pDiv;
+    };
+    this.setChartHead = function (pDiv) {
+        if (typeof HTMLDivElement !== "function" || pDiv instanceof HTMLDivElement)
+            this.vChartHead = pDiv;
+    };
+    this.setListBody = function (pDiv) {
+        if (typeof HTMLDivElement !== "function" || pDiv instanceof HTMLDivElement)
+            this.vListBody = pDiv;
+    };
+    this.setChartTable = function (pTable) {
+        if (typeof HTMLTableElement !== "function" ||
+            pTable instanceof HTMLTableElement)
+            this.vChartTable = pTable;
+    };
+    this.setLines = function (pDiv) {
+        if (typeof HTMLDivElement !== "function" || pDiv instanceof HTMLDivElement)
+            this.vLines = pDiv;
+    };
+    this.setLineOptions = function (lineOptions) {
+        this.vLineOptions = lineOptions;
+    };
+    this.setTimer = function (pVal) {
+        this.vTimer = pVal * 1;
+    };
+    this.setTooltipDelay = function (pVal) {
+        this.vTooltipDelay = pVal * 1;
+    };
+    this.setTooltipTemplate = function (pVal) {
+        this.vTooltipTemplate = pVal;
+    };
+    this.setMinDate = function (pVal) {
+        this.vMinDate = pVal;
+    };
+    this.setMaxDate = function (pVal) {
+        this.vMaxDate = pVal;
+    };
     this.addLang = function (pLang, pVals) {
         if (!this.vLangs[pLang]) {
             this.vLangs[pLang] = new Object();
-            for (var vKey in this.vLangs['en'])
-                this.vLangs[pLang][vKey] = (pVals[vKey]) ? document.createTextNode(pVals[vKey]).data : this.vLangs['en'][vKey];
+            for (var vKey in this.vLangs["en"])
+                this.vLangs[pLang][vKey] = pVals[vKey]
+                    ? document.createTextNode(pVals[vKey]).data
+                    : this.vLangs["en"][vKey];
         }
     };
     this.setCustomLang = function (pVals) {
         this.vLangs[this.vLang] = new Object();
-        for (var vKey in this.vLangs['en']) {
-            this.vLangs[this.vLang][vKey] = (pVals[vKey]) ? document.createTextNode(pVals[vKey]).data : this.vLangs['en'][vKey];
+        for (var vKey in this.vLangs["en"]) {
+            this.vLangs[this.vLang][vKey] = pVals[vKey]
+                ? document.createTextNode(pVals[vKey]).data
+                : this.vLangs["en"][vKey];
         }
     };
-    this.setTotalHeight = function (pVal) { this.vTotalHeight = pVal; };
+    this.setTotalHeight = function (pVal) {
+        this.vTotalHeight = pVal;
+    };
     // EVENTS
-    this.setEvents = function (pEvents) { this.vEvents = pEvents; };
-    this.setEventsChange = function (pEventsChange) { this.vEventsChange = pEventsChange; };
-    this.setEventClickRow = function (fn) { this.vEventClickRow = fn; };
-    this.setEventClickCollapse = function (fn) { this.vEventClickCollapse = fn; };
-    this.setResources = function (resources) { this.vResources = resources; };
-    this.setAdditionalHeaders = function (headers) { this.vAdditionalHeaders = headers; };
-    this.setColumnOrder = function (order) { this.vColumnOrder = order; };
-    this.setEditable = function (editable) { this.vEditable = editable; };
-    this.setDebug = function (debug) { this.vDebug = debug; };
+    this.setEvents = function (pEvents) {
+        this.vEvents = pEvents;
+    };
+    this.setEventsChange = function (pEventsChange) {
+        this.vEventsChange = pEventsChange;
+    };
+    this.setEventClickRow = function (fn) {
+        this.vEventClickRow = fn;
+    };
+    this.setEventClickCollapse = function (fn) {
+        this.vEventClickCollapse = fn;
+    };
+    this.setResources = function (resources) {
+        this.vResources = resources;
+    };
+    this.setAdditionalHeaders = function (headers) {
+        this.vAdditionalHeaders = headers;
+    };
+    this.setColumnOrder = function (order) {
+        this.vColumnOrder = order;
+    };
+    this.setEditable = function (editable) {
+        this.vEditable = editable;
+    };
+    this.setDebug = function (debug) {
+        this.vDebug = debug;
+    };
     /**
      * GETTERS
      */
-    this.getDivId = function () { return this.vDivId; };
-    this.getUseFade = function () { return this.vUseFade; };
-    this.getUseMove = function () { return this.vUseMove; };
-    this.getUseRowHlt = function () { return this.vUseRowHlt; };
-    this.getUseToolTip = function () { return this.vUseToolTip; };
-    this.getUseSort = function () { return this.vUseSort; };
-    this.getUseSingleCell = function () { return this.vUseSingleCell; };
-    this.getFormatArr = function () { return this.vFormatArr; };
-    this.getShowRes = function () { return this.vShowRes; };
-    this.getShowDur = function () { return this.vShowDur; };
-    this.getShowComp = function () { return this.vShowComp; };
-    this.getShowStartDate = function () { return this.vShowStartDate; };
-    this.getShowEndDate = function () { return this.vShowEndDate; };
-    this.getShowPlanStartDate = function () { return this.vShowPlanStartDate; };
-    this.getShowPlanEndDate = function () { return this.vShowPlanEndDate; };
-    this.getShowCost = function () { return this.vShowCost; };
-    this.getShowAddEntries = function () { return this.vShowAddEntries; };
-    this.getShowTaskInfoRes = function () { return this.vShowTaskInfoRes; };
-    this.getShowTaskInfoDur = function () { return this.vShowTaskInfoDur; };
-    this.getShowTaskInfoComp = function () { return this.vShowTaskInfoComp; };
-    this.getShowTaskInfoStartDate = function () { return this.vShowTaskInfoStartDate; };
-    this.getShowTaskInfoEndDate = function () { return this.vShowTaskInfoEndDate; };
-    this.getShowTaskInfoNotes = function () { return this.vShowTaskInfoNotes; };
-    this.getShowTaskInfoLink = function () { return this.vShowTaskInfoLink; };
-    this.getShowEndWeekDate = function () { return this.vShowEndWeekDate; };
-    this.getShowWeekends = function () { return this.vShowWeekends; };
-    this.getShowSelector = function () { return this.vShowSelector; };
-    this.getShowDeps = function () { return this.vShowDeps; };
-    this.getDateInputFormat = function () { return this.vDateInputFormat; };
-    this.getDateTaskTableDisplayFormat = function () { return this.vDateTaskTableDisplayFormat; };
-    this.getDateTaskDisplayFormat = function () { return this.vDateTaskDisplayFormat; };
-    this.getHourMajorDateDisplayFormat = function () { return this.vHourMajorDateDisplayFormat; };
-    this.getHourMinorDateDisplayFormat = function () { return this.vHourMinorDateDisplayFormat; };
-    this.getDayMajorDateDisplayFormat = function () { return this.vDayMajorDateDisplayFormat; };
-    this.getDayMinorDateDisplayFormat = function () { return this.vDayMinorDateDisplayFormat; };
-    this.getWeekMajorDateDisplayFormat = function () { return this.vWeekMajorDateDisplayFormat; };
-    this.getWeekMinorDateDisplayFormat = function () { return this.vWeekMinorDateDisplayFormat; };
-    this.getMonthMajorDateDisplayFormat = function () { return this.vMonthMajorDateDisplayFormat; };
-    this.getMonthMinorDateDisplayFormat = function () { return this.vMonthMinorDateDisplayFormat; };
-    this.getQuarterMajorDateDisplayFormat = function () { return this.vQuarterMajorDateDisplayFormat; };
-    this.getQuarterMinorDateDisplayFormat = function () { return this.vQuarterMinorDateDisplayFormat; };
-    this.getCaptionType = function () { return this.vCaptionType; };
-    this.getMinGpLen = function () { return this.vMinGpLen; };
-    this.getScrollTo = function () { return this.vScrollTo; };
-    this.getHourColWidth = function () { return this.vHourColWidth; };
-    this.getDayColWidth = function () { return this.vDayColWidth; };
-    this.getWeekColWidth = function () { return this.vWeekColWidth; };
-    this.getMonthColWidth = function () { return this.vMonthColWidth; };
-    this.getQuarterColWidth = function () { return this.vQuarterColWidth; };
-    this.getRowHeight = function () { return this.vRowHeight; };
-    this.getChartBody = function () { return this.vChartBody; };
-    this.getChartHead = function () { return this.vChartHead; };
-    this.getListBody = function () { return this.vListBody; };
-    this.getChartTable = function () { return this.vChartTable; };
-    this.getLines = function () { return this.vLines; };
-    this.getTimer = function () { return this.vTimer; };
-    this.getMinDate = function () { return this.vMinDate; };
-    this.getMaxDate = function () { return this.vMaxDate; };
-    this.getTooltipDelay = function () { return this.vTooltipDelay; };
-    this.getList = function () { return this.vTaskList; };
+    this.getDivId = function () {
+        return this.vDivId;
+    };
+    this.getUseFade = function () {
+        return this.vUseFade;
+    };
+    this.getUseMove = function () {
+        return this.vUseMove;
+    };
+    this.getUseRowHlt = function () {
+        return this.vUseRowHlt;
+    };
+    this.getUseToolTip = function () {
+        return this.vUseToolTip;
+    };
+    this.getUseSort = function () {
+        return this.vUseSort;
+    };
+    this.getUseSingleCell = function () {
+        return this.vUseSingleCell;
+    };
+    this.getFormatArr = function () {
+        return this.vFormatArr;
+    };
+    this.getShowRes = function () {
+        return this.vShowRes;
+    };
+    this.getShowDur = function () {
+        return this.vShowDur;
+    };
+    this.getShowComp = function () {
+        return this.vShowComp;
+    };
+    this.getShowStartDate = function () {
+        return this.vShowStartDate;
+    };
+    this.getShowEndDate = function () {
+        return this.vShowEndDate;
+    };
+    this.getShowPlanStartDate = function () {
+        return this.vShowPlanStartDate;
+    };
+    this.getShowPlanEndDate = function () {
+        return this.vShowPlanEndDate;
+    };
+    this.getShowCost = function () {
+        return this.vShowCost;
+    };
+    this.getShowAddEntries = function () {
+        return this.vShowAddEntries;
+    };
+    this.getShowTaskInfoRes = function () {
+        return this.vShowTaskInfoRes;
+    };
+    this.getShowTaskInfoDur = function () {
+        return this.vShowTaskInfoDur;
+    };
+    this.getShowTaskInfoComp = function () {
+        return this.vShowTaskInfoComp;
+    };
+    this.getShowTaskInfoStartDate = function () {
+        return this.vShowTaskInfoStartDate;
+    };
+    this.getShowTaskInfoEndDate = function () {
+        return this.vShowTaskInfoEndDate;
+    };
+    this.getShowTaskInfoNotes = function () {
+        return this.vShowTaskInfoNotes;
+    };
+    this.getShowTaskInfoLink = function () {
+        return this.vShowTaskInfoLink;
+    };
+    this.getShowEndWeekDate = function () {
+        return this.vShowEndWeekDate;
+    };
+    this.getShowWeekends = function () {
+        return this.vShowWeekends;
+    };
+    this.getShowSelector = function () {
+        return this.vShowSelector;
+    };
+    this.getShowDeps = function () {
+        return this.vShowDeps;
+    };
+    this.getDateInputFormat = function () {
+        return this.vDateInputFormat;
+    };
+    this.getDateTaskTableDisplayFormat = function () {
+        return this.vDateTaskTableDisplayFormat;
+    };
+    this.getDateTaskDisplayFormat = function () {
+        return this.vDateTaskDisplayFormat;
+    };
+    this.getHourMajorDateDisplayFormat = function () {
+        return this.vHourMajorDateDisplayFormat;
+    };
+    this.getHourMinorDateDisplayFormat = function () {
+        return this.vHourMinorDateDisplayFormat;
+    };
+    this.getDayMajorDateDisplayFormat = function () {
+        return this.vDayMajorDateDisplayFormat;
+    };
+    this.getDayMinorDateDisplayFormat = function () {
+        return this.vDayMinorDateDisplayFormat;
+    };
+    this.getTwoDaysMajorDateDisplayFormat = function () {
+        return this.vTwoDaysMajorDateDisplayFormat;
+    };
+    this.getTwoDaysMinorDateDisplayFormat = function () {
+        return this.vTwoDaysMinorDateDisplayFormat;
+    };
+    this.getWeekMajorDateDisplayFormat = function () {
+        return this.vWeekMajorDateDisplayFormat;
+    };
+    this.getWeekMinorDateDisplayFormat = function () {
+        return this.vWeekMinorDateDisplayFormat;
+    };
+    this.getMonthMajorDateDisplayFormat = function () {
+        return this.vMonthMajorDateDisplayFormat;
+    };
+    this.getMonthMinorDateDisplayFormat = function () {
+        return this.vMonthMinorDateDisplayFormat;
+    };
+    this.getQuarterMajorDateDisplayFormat = function () {
+        return this.vQuarterMajorDateDisplayFormat;
+    };
+    this.getQuarterMinorDateDisplayFormat = function () {
+        return this.vQuarterMinorDateDisplayFormat;
+    };
+    this.getCaptionType = function () {
+        return this.vCaptionType;
+    };
+    this.getMinGpLen = function () {
+        return this.vMinGpLen;
+    };
+    this.getScrollTo = function () {
+        return this.vScrollTo;
+    };
+    this.getHourColWidth = function () {
+        return this.vHourColWidth;
+    };
+    this.getDayColWidth = function () {
+        return this.vDayColWidth;
+    };
+    this.getWeekColWidth = function () {
+        return this.vWeekColWidth;
+    };
+    this.getMonthColWidth = function () {
+        return this.vMonthColWidth;
+    };
+    this.getQuarterColWidth = function () {
+        return this.vQuarterColWidth;
+    };
+    this.getRowHeight = function () {
+        return this.vRowHeight;
+    };
+    this.getChartBody = function () {
+        return this.vChartBody;
+    };
+    this.getChartHead = function () {
+        return this.vChartHead;
+    };
+    this.getListBody = function () {
+        return this.vListBody;
+    };
+    this.getChartTable = function () {
+        return this.vChartTable;
+    };
+    this.getLines = function () {
+        return this.vLines;
+    };
+    this.getTimer = function () {
+        return this.vTimer;
+    };
+    this.getMinDate = function () {
+        return this.vMinDate;
+    };
+    this.getMaxDate = function () {
+        return this.vMaxDate;
+    };
+    this.getTooltipDelay = function () {
+        return this.vTooltipDelay;
+    };
+    this.getList = function () {
+        return this.vTaskList;
+    };
     //EVENTS
-    this.getEventsClickCell = function () { return this.vEvents; };
-    this.getEventsChange = function () { return this.vEventsChange; };
-    this.getEventClickRow = function () { return this.vEventClickRow; };
-    this.getEventClickCollapse = function () { return this.vEventClickCollapse; };
-    this.getResources = function () { return this.vResources; };
-    this.getAdditionalHeaders = function () { return this.vAdditionalHeaders; };
-    this.getColumnOrder = function () { return this.vColumnOrder || draw_columns_1.COLUMN_ORDER; };
+    this.getEventsClickCell = function () {
+        return this.vEvents;
+    };
+    this.getEventsChange = function () {
+        return this.vEventsChange;
+    };
+    this.getEventClickRow = function () {
+        return this.vEventClickRow;
+    };
+    this.getEventClickCollapse = function () {
+        return this.vEventClickCollapse;
+    };
+    this.getResources = function () {
+        return this.vResources;
+    };
+    this.getAdditionalHeaders = function () {
+        return this.vAdditionalHeaders;
+    };
+    this.getColumnOrder = function () {
+        return this.vColumnOrder || draw_columns_1.COLUMN_ORDER;
+    };
 };
 
 },{"./draw_columns":3,"./utils/date_utils":11}],10:[function(require,module,exports){
@@ -4189,6 +4532,9 @@ exports.TaskItem = function (pID, pName, pStart, pEnd, pClass, pLink, pMile, pRe
             case "quarter":
                 vUnits = "month";
                 break;
+            case "twodays": // Novo caso para formato de 2 dias
+                vUnits = "twodays";
+                break;
             default:
                 vUnits = pFormat;
                 break;
@@ -4208,6 +4554,11 @@ exports.TaskItem = function (pID, pName, pStart, pEnd, pClass, pLink, pMile, pRe
             case "day":
                 tmpPer = Math.round(hours / 24);
                 vDuration = tmpPer + " " + (tmpPer != 1 ? pLang["dys"] : pLang["dy"]);
+                break;
+            case "twodays": // Cálculo para blocos de 2 dias
+                tmpPer = Math.round(hours / 48); // 48 horas = 2 dias
+                vDuration =
+                    tmpPer + " " + (tmpPer != 1 ? pLang["twodys"] : pLang["twody"]);
                 break;
             case "week":
                 tmpPer = Math.round(hours / 24 / 7);
@@ -4683,12 +5034,9 @@ exports.processRows = function (pList, pID, pRow, pLevel, pOpen, pUseSort, vDebu
         if (vMinDate) {
             pList[pRow].setStart(vMinDate);
         }
-        console.log("Valor do Max Date: ", vMaxDate);
-        console.log("Valor da data pre mudança: ", pList[pRow].getEnd());
         // if (vMaxDate) {
         //   pList[pRow].setEnd(vMaxDate);
         // }
-        console.log("Valor da data pos mudança: ", pList[pRow].getEnd());
         if (pList[pRow].getGroupMinPlanStart() != null &&
             pList[pRow].getGroupMinPlanStart() < vMinPlanDate) {
             vMinPlanDate = pList[pRow].getGroupMinPlanStart();
@@ -4700,9 +5048,9 @@ exports.processRows = function (pList, pID, pRow, pLevel, pOpen, pUseSort, vDebu
         if (vMinPlanDate) {
             pList[pRow].setPlanStart(vMinPlanDate);
         }
-        if (vMaxPlanDate) {
-            pList[pRow].setPlanEnd(vMaxPlanDate);
-        }
+        // if (vMaxPlanDate) {
+        //   pList[pRow].setPlanEnd(vMaxPlanDate);
+        // }
         pList[pRow].setNumKid(vNumKid);
         pList[pRow].setWeight(vWeight);
         pList[pRow].setCompVal(Math.ceil(vCompSum / vWeight));
@@ -4772,6 +5120,13 @@ exports.getMinDate = function (pList, pFormat, pMinDate) {
         while (vDate.getDay() % 7 != 1)
             vDate.setDate(vDate.getDate() - 1);
     }
+    else if (pFormat === "twodays") {
+        // Calcula o número de dias desde a época (1º de Janeiro de 1970)
+        var daysSinceEpoch = Math.floor(vDate.getTime() / 86400000); // 86400000 ms = 1 dia
+        var remainder = daysSinceEpoch % 2; // Resto 0 ou 1
+        vDate.setDate(vDate.getDate() - remainder); // Alinha ao início do bloco de 2 dias
+        vDate.setHours(0, 0, 0); // Define hora como 00:00:00
+    }
     else if (pFormat == "week") {
         vDate.setDate(vDate.getDate() - 1);
         while (vDate.getDay() % 7 != 1)
@@ -4828,6 +5183,13 @@ exports.getMaxDate = function (pList, pFormat, pMaxDate) {
         vDate.setDate(vDate.getDate() + 1);
         while (vDate.getDay() % 7 != 0)
             vDate.setDate(vDate.getDate() + 1);
+    }
+    else if (pFormat === "twodays") {
+        // Calcula o número de dias desde a época (1º de Janeiro de 1970)
+        var daysSinceEpoch = Math.floor(vDate.getTime() / 86400000);
+        var remainder = daysSinceEpoch % 2; // Resto 0 ou 1
+        vDate.setDate(vDate.getDate() + (1 - remainder)); // Alinha ao final do bloco
+        vDate.setHours(23, 59, 59, 999); // Define horário para o final do dia
     }
     else if (pFormat == "week") {
         //For weeks, what is the last logical boundary?
@@ -5064,7 +5426,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.drawSelector = exports.sLine = exports.CalcTaskXY = exports.getArrayLocationByID = exports.newNode = exports.makeInput = void 0;
 var events_1 = require("../events");
 exports.makeInput = function (formattedValue, editable, type, value, choices) {
-    if (type === void 0) { type = 'text'; }
+    if (type === void 0) { type = "text"; }
     if (value === void 0) { value = null; }
     if (choices === void 0) { choices = null; }
     if (!value) {
@@ -5072,11 +5434,15 @@ exports.makeInput = function (formattedValue, editable, type, value, choices) {
     }
     if (editable) {
         switch (type) {
-            case 'date':
+            case "date":
                 // Take timezone into account before converting to ISO String
-                value = value ? new Date(value.getTime() - (value.getTimezoneOffset() * 60000)).toISOString().split('T')[0] : '';
+                value = value
+                    ? new Date(value.getTime() - value.getTimezoneOffset() * 60000)
+                        .toISOString()
+                        .split("T")[0]
+                    : "";
                 return "<input class=\"gantt-inputtable\" type=\"date\" value=\"" + value + "\">";
-            case 'resource':
+            case "resource":
                 if (choices) {
                     var found = choices.filter(function (c) { return c.id == value || c.name == value; });
                     if (found && found.length > 0) {
@@ -5085,15 +5451,21 @@ exports.makeInput = function (formattedValue, editable, type, value, choices) {
                     else {
                         choices.push({ id: value, name: value });
                     }
-                    return "<select>" + choices.map(function (c) { return "<option value=\"" + c.id + "\" " + (value == c.id ? 'selected' : '') + " >" + c.name + "</option>"; }).join('') + "</select>";
+                    return ("<select>" +
+                        choices
+                            .map(function (c) {
+                            return "<option value=\"" + c.id + "\" " + (value == c.id ? "selected" : "") + " >" + c.name + "</option>";
+                        })
+                            .join("") +
+                        "</select>");
                 }
                 else {
-                    return "<input class=\"gantt-inputtable\" type=\"text\" value=\"" + (value ? value : '') + "\">";
+                    return "<input class=\"gantt-inputtable\" type=\"text\" value=\"" + (value ? value : "") + "\">";
                 }
-            case 'cost':
-                return "<input class=\"gantt-inputtable\" type=\"number\" max=\"100\" min=\"0\" value=\"" + (value ? value : '') + "\">";
+            case "cost":
+                return "<input class=\"gantt-inputtable\" type=\"number\" max=\"100\" min=\"0\" value=\"" + (value ? value : "") + "\">";
             default:
-                return "<input class=\"gantt-inputtable\" value=\"" + (value ? value : '') + "\">";
+                return "<input class=\"gantt-inputtable\" value=\"" + (value ? value : "") + "\">";
         }
     }
     else {
@@ -5120,15 +5492,15 @@ exports.newNode = function (pParent, pNodeType, pId, pClass, pText, pWidth, pLef
     if (pClass)
         vNewNode.className = pClass;
     if (pWidth)
-        vNewNode.style.width = (isNaN(pWidth * 1)) ? pWidth : pWidth + 'px';
+        vNewNode.style.width = isNaN(pWidth * 1) ? pWidth : pWidth + "px";
     if (pLeft)
-        vNewNode.style.left = (isNaN(pLeft * 1)) ? pLeft : pLeft + 'px';
+        vNewNode.style.left = isNaN(pLeft * 1) ? pLeft : pLeft + "px";
     if (pText) {
-        if (pText.indexOf && pText.indexOf('<') === -1) {
+        if (pText.indexOf && pText.indexOf("<") === -1) {
             vNewNode.appendChild(document.createTextNode(pText));
         }
         else {
-            vNewNode.insertAdjacentHTML('beforeend', pText);
+            vNewNode.insertAdjacentHTML("beforeend", pText);
         }
     }
     if (pDisplay)
@@ -5152,12 +5524,12 @@ exports.CalcTaskXY = function () {
     var vTaskDiv;
     var vParDiv;
     var vLeft, vTop, vWidth;
-    var vHeight = Math.floor((this.getRowHeight() / 2));
+    var vHeight = Math.floor(this.getRowHeight() / 2);
     for (var i = 0; i < vList.length; i++) {
         vID = vList[i].getID();
         vBarDiv = vList[i].getBarDiv();
         vTaskDiv = vList[i].getTaskDiv();
-        if ((vList[i].getParItem() && vList[i].getParItem().getGroup() == 2)) {
+        if (vList[i].getParItem() && vList[i].getParItem().getGroup() == 2) {
             vParDiv = vList[i].getParItem().getChildRow();
         }
         else
@@ -5175,24 +5547,25 @@ exports.sLine = function (x1, y1, x2, y2, pClass) {
     var vTop = Math.min(y1, y2);
     var vWid = Math.abs(x2 - x1) + 1;
     var vHgt = Math.abs(y2 - y1) + 1;
-    var vTmpDiv = document.createElement('div');
-    vTmpDiv.id = this.vDivId + 'line' + this.vDepId++;
-    vTmpDiv.style.position = 'absolute';
-    vTmpDiv.style.overflow = 'hidden';
-    vTmpDiv.style.zIndex = '0';
-    vTmpDiv.style.left = vLeft + 'px';
-    vTmpDiv.style.top = vTop + 'px';
-    vTmpDiv.style.width = vWid + 'px';
-    vTmpDiv.style.height = vHgt + 'px';
-    vTmpDiv.style.visibility = 'visible';
+    var vTmpDiv = document.createElement("div");
+    vTmpDiv.id = this.vDivId + "line" + this.vDepId++;
+    vTmpDiv.style.position = "absolute";
+    vTmpDiv.style.overflow = "hidden";
+    vTmpDiv.style.zIndex = "0";
+    vTmpDiv.style.left = vLeft + "px";
+    vTmpDiv.style.top = vTop + "px";
+    vTmpDiv.style.width = vWid + "px";
+    vTmpDiv.style.height = vHgt + "px";
+    vTmpDiv.style.visibility = "visible";
     if (vWid == 1)
-        vTmpDiv.className = 'glinev';
+        vTmpDiv.className = "glinev";
     else
-        vTmpDiv.className = 'glineh';
+        vTmpDiv.className = "glineh";
     if (pClass)
-        vTmpDiv.className += ' ' + pClass;
+        vTmpDiv.className += " " + pClass;
     this.getLines().appendChild(vTmpDiv);
-    if (this.vEvents.onLineDraw && typeof this.vEvents.onLineDraw === 'function') {
+    if (this.vEvents.onLineDraw &&
+        typeof this.vEvents.onLineDraw === "function") {
         this.vEvents.onLineDraw(vTmpDiv);
     }
     return vTmpDiv;
@@ -5205,20 +5578,22 @@ exports.drawSelector = function (pPos) {
             vDisplay = true;
     }
     if (vDisplay) {
-        var vTmpDiv = exports.newNode(vOutput, 'div', null, 'gselector', this.vLangs[this.vLang]['format'] + ':');
-        if (this.vFormatArr.join().toLowerCase().indexOf('hour') != -1)
-            events_1.addFormatListeners(this, 'hour', exports.newNode(vTmpDiv, 'span', this.vDivId + 'formathour' + pPos, 'gformlabel' + ((this.vFormat == 'hour') ? ' gselected' : ''), this.vLangs[this.vLang]['hour']));
-        if (this.vFormatArr.join().toLowerCase().indexOf('day') != -1)
-            events_1.addFormatListeners(this, 'day', exports.newNode(vTmpDiv, 'span', this.vDivId + 'formatday' + pPos, 'gformlabel' + ((this.vFormat == 'day') ? ' gselected' : ''), this.vLangs[this.vLang]['day']));
-        if (this.vFormatArr.join().toLowerCase().indexOf('week') != -1)
-            events_1.addFormatListeners(this, 'week', exports.newNode(vTmpDiv, 'span', this.vDivId + 'formatweek' + pPos, 'gformlabel' + ((this.vFormat == 'week') ? ' gselected' : ''), this.vLangs[this.vLang]['week']));
-        if (this.vFormatArr.join().toLowerCase().indexOf('month') != -1)
-            events_1.addFormatListeners(this, 'month', exports.newNode(vTmpDiv, 'span', this.vDivId + 'formatmonth' + pPos, 'gformlabel' + ((this.vFormat == 'month') ? ' gselected' : ''), this.vLangs[this.vLang]['month']));
-        if (this.vFormatArr.join().toLowerCase().indexOf('quarter') != -1)
-            events_1.addFormatListeners(this, 'quarter', exports.newNode(vTmpDiv, 'span', this.vDivId + 'formatquarter' + pPos, 'gformlabel' + ((this.vFormat == 'quarter') ? ' gselected' : ''), this.vLangs[this.vLang]['quarter']));
+        var vTmpDiv = exports.newNode(vOutput, "div", null, "gselector", this.vLangs[this.vLang]["format"] + ":");
+        if (this.vFormatArr.join().toLowerCase().indexOf("hour") != -1)
+            events_1.addFormatListeners(this, "hour", exports.newNode(vTmpDiv, "span", this.vDivId + "formathour" + pPos, "gformlabel" + (this.vFormat == "hour" ? " gselected" : ""), this.vLangs[this.vLang]["hour"]));
+        if (this.vFormatArr.join().toLowerCase().indexOf("day") != -1)
+            events_1.addFormatListeners(this, "day", exports.newNode(vTmpDiv, "span", this.vDivId + "formatday" + pPos, "gformlabel" + (this.vFormat == "day" ? " gselected" : ""), this.vLangs[this.vLang]["day"]));
+        if (this.vFormatArr.join().toLowerCase().indexOf("twodays") != -1)
+            events_1.addFormatListeners(this, "twodays", exports.newNode(vTmpDiv, "span", this.vDivId + "formattwodays" + pPos, "gformlabel" + (this.vFormat == "twodays" ? "gselected" : ""), this.vLangs[this.vLang]["twodays"]));
+        if (this.vFormatArr.join().toLowerCase().indexOf("week") != -1)
+            events_1.addFormatListeners(this, "week", exports.newNode(vTmpDiv, "span", this.vDivId + "formatweek" + pPos, "gformlabel" + (this.vFormat == "week" ? " gselected" : ""), this.vLangs[this.vLang]["week"]));
+        if (this.vFormatArr.join().toLowerCase().indexOf("month") != -1)
+            events_1.addFormatListeners(this, "month", exports.newNode(vTmpDiv, "span", this.vDivId + "formatmonth" + pPos, "gformlabel" + (this.vFormat == "month" ? " gselected" : ""), this.vLangs[this.vLang]["month"]));
+        if (this.vFormatArr.join().toLowerCase().indexOf("quarter") != -1)
+            events_1.addFormatListeners(this, "quarter", exports.newNode(vTmpDiv, "span", this.vDivId + "formatquarter" + pPos, "gformlabel" + (this.vFormat == "quarter" ? " gselected" : ""), this.vLangs[this.vLang]["quarter"]));
     }
     else {
-        exports.newNode(vOutput, 'div', null, 'gselector');
+        exports.newNode(vOutput, "div", null, "gselector");
     }
     return vOutput;
 };
@@ -5365,6 +5740,7 @@ exports.calculateCurrentDateOffset = function (curTaskStart, curTaskEnd) {
 };
 exports.getOffset = function (pStartDate, pEndDate, pColWidth, pFormat, pShowWeekends) {
     var DAY_CELL_MARGIN_WIDTH = 3; // Cell margin for 'day' format
+    var TWODAYS_CELL_MARGIN_WIDTH = 3;
     var WEEK_CELL_MARGIN_WIDTH = 3; // Cell margin for 'week' format
     var MONTH_CELL_MARGIN_WIDTH = 3; // Cell margin for 'month' format
     var QUARTER_CELL_MARGIN_WIDTH = 3; // Cell margin for 'quarter' format
@@ -5392,6 +5768,24 @@ exports.getOffset = function (pStartDate, pEndDate, pColWidth, pFormat, pShowWee
             vTaskRight -= countWeekends * 24;
         }
         vTaskRightPx = Math.ceil((vTaskRight / 24) * (pColWidth + DAY_CELL_MARGIN_WIDTH) - 1);
+    }
+    else if (pFormat === "twodays") {
+        if (!pShowWeekends) {
+            var start = curTaskStart;
+            var end = curTaskEnd;
+            var countWeekends = 0;
+            while (start < end) {
+                var day = start.getDay();
+                if (day === 6 || day === 0) {
+                    // Sábado ou Domingo
+                    countWeekends++;
+                }
+                start = new Date(start.getTime() + 24 * oneHour);
+            }
+            vTaskRight -= countWeekends * 24; // Remove horas de finais de semana
+        }
+        // Calcula o offset em blocos de 2 dias (48 horas)
+        vTaskRightPx = Math.ceil((vTaskRight / 48) * (pColWidth + TWODAYS_CELL_MARGIN_WIDTH) - 1);
     }
     else if (pFormat == "week") {
         vTaskRightPx = Math.ceil((vTaskRight / (24 * 7)) * (pColWidth + WEEK_CELL_MARGIN_WIDTH) - 1);

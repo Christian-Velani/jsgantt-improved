@@ -121,8 +121,8 @@ function start(e) {
       vColumnOrder,
       vScrollTo,
       vUseSort,
-      vFormat: "week",
-      vFormatArr: ["Hour", "Day", "Week", "Month", "Quarter"], // Even with setUseSingleCell using Hour format on such a large chart can cause issues in some browsers
+      vFormat: "twodays",
+      vFormatArr: ["Hour", "Day", "Two Days", "Week", "Month", "Quarter"], // Even with setUseSingleCell using Hour format on such a large chart can cause issues in some browsers
     });
     //DELAY FROM INPUT
 

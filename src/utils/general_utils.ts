@@ -185,6 +185,7 @@ export const getOffset = function (
   pShowWeekends
 ) {
   const DAY_CELL_MARGIN_WIDTH = 3; // Cell margin for 'day' format
+  const TWODAYS_CELL_MARGIN_WIDTH = 3;
   const WEEK_CELL_MARGIN_WIDTH = 3; // Cell margin for 'week' format
   const MONTH_CELL_MARGIN_WIDTH = 3; // Cell margin for 'month' format
   const QUARTER_CELL_MARGIN_WIDTH = 3; // Cell margin for 'quarter' format
@@ -217,6 +218,26 @@ export const getOffset = function (
     }
     vTaskRightPx = Math.ceil(
       (vTaskRight / 24) * (pColWidth + DAY_CELL_MARGIN_WIDTH) - 1
+    );
+  } else if (pFormat === "twodays") {
+    if (!pShowWeekends) {
+      let start = curTaskStart;
+      let end = curTaskEnd;
+      let countWeekends = 0;
+      while (start < end) {
+        const day = start.getDay();
+        if (day === 6 || day === 0) {
+          // Sábado ou Domingo
+          countWeekends++;
+        }
+        start = new Date(start.getTime() + 24 * oneHour);
+      }
+      vTaskRight -= countWeekends * 24; // Remove horas de finais de semana
+    }
+
+    // Calcula o offset em blocos de 2 dias (48 horas)
+    vTaskRightPx = Math.ceil(
+      (vTaskRight / 48) * (pColWidth + TWODAYS_CELL_MARGIN_WIDTH) - 1
     );
   } else if (pFormat == "week") {
     vTaskRightPx = Math.ceil(

@@ -405,6 +405,9 @@ export const TaskItem = function (
       case "quarter":
         vUnits = "month";
         break;
+      case "twodays": // Novo caso para formato de 2 dias
+        vUnits = "twodays";
+        break;
       default:
         vUnits = pFormat;
         break;
@@ -426,6 +429,11 @@ export const TaskItem = function (
       case "day":
         tmpPer = Math.round(hours / 24);
         vDuration = tmpPer + " " + (tmpPer != 1 ? pLang["dys"] : pLang["dy"]);
+        break;
+      case "twodays": // Cálculo para blocos de 2 dias
+        tmpPer = Math.round(hours / 48); // 48 horas = 2 dias
+        vDuration =
+          tmpPer + " " + (tmpPer != 1 ? pLang["twodys"] : pLang["twody"]);
         break;
       case "week":
         tmpPer = Math.round(hours / 24 / 7);
