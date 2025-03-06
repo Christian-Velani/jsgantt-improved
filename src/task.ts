@@ -979,6 +979,7 @@ export const processRows = function (
   }
 
   if (pRow >= 0) {
+    console.log("Processando a linha: ", pList[pRow].getName());
     if (
       pList[pRow].getGroupMinStart() != null &&
       pList[pRow].getGroupMinStart() < vMinDate
@@ -995,9 +996,10 @@ export const processRows = function (
     if (vMinDate) {
       pList[pRow].setStart(vMinDate);
     }
-    if (vMaxDate) {
-      pList[pRow].setEnd(vMaxDate);
-    }
+
+    // if (vMaxDate) {
+    //   pList[pRow].setEnd(vMaxDate);
+    // }
 
     if (
       pList[pRow].getGroupMinPlanStart() != null &&
@@ -1015,9 +1017,9 @@ export const processRows = function (
     if (vMinPlanDate) {
       pList[pRow].setPlanStart(vMinPlanDate);
     }
-    if (vMaxPlanDate) {
-      pList[pRow].setPlanEnd(vMaxPlanDate);
-    }
+    // if (vMaxPlanDate) {
+    //   pList[pRow].setPlanEnd(vMaxPlanDate);
+    // }
     pList[pRow].setNumKid(vNumKid);
     pList[pRow].setWeight(vWeight);
     pList[pRow].setCompVal(Math.ceil(vCompSum / vWeight));

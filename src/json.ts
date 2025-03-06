@@ -13,7 +13,6 @@ export const parseJSON = async function (
   redrawAfter = true
 ) {
   const jsonObj = await makeRequest(pFile, true, true);
-  console.log("JSON object: ", jsonObj);
   let bd;
   if (vDebug) {
     bd = new Date();
@@ -58,8 +57,6 @@ export const addJSONTask = function (pGanttVar, pJsonObj) {
     let duration = "";
     let bartext = "";
     const additionalObject = {};
-
-    console.log("Passando por: ", pJsonObj[index]);
 
     for (let prop in pJsonObj[index]) {
       let property = prop;
