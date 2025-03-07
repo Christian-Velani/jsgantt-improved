@@ -24,12 +24,6 @@ export const getMinDate = function (pList, pFormat, pMinDate) {
   if (pFormat == "day") {
     vDate.setDate(vDate.getDate() - 1);
     while (vDate.getDay() % 7 != 1) vDate.setDate(vDate.getDate() - 1);
-  } else if (pFormat === "twodays") {
-    // Calcula o número de dias desde a época (1º de Janeiro de 1970)
-    const daysSinceEpoch = Math.floor(vDate.getTime() / 86400000); // 86400000 ms = 1 dia
-    const remainder = daysSinceEpoch % 2; // Resto 0 ou 1
-    vDate.setDate(vDate.getDate() - remainder); // Alinha ao início do bloco de 2 dias
-    vDate.setHours(0, 0, 0); // Define hora como 00:00:00
   } else if (pFormat == "week") {
     vDate.setDate(vDate.getDate() - 1);
     while (vDate.getDay() % 7 != 1) vDate.setDate(vDate.getDate() - 1);
@@ -92,12 +86,6 @@ export const getMaxDate = function (pList, pFormat, pMaxDate) {
   if (pFormat == "day") {
     vDate.setDate(vDate.getDate() + 1);
     while (vDate.getDay() % 7 != 0) vDate.setDate(vDate.getDate() + 1);
-  } else if (pFormat === "twodays") {
-    // Calcula o número de dias desde a época (1º de Janeiro de 1970)
-    const daysSinceEpoch = Math.floor(vDate.getTime() / 86400000);
-    const remainder = daysSinceEpoch % 2; // Resto 0 ou 1
-    vDate.setDate(vDate.getDate() + (1 - remainder)); // Alinha ao final do bloco
-    vDate.setHours(23, 59, 59, 999); // Define horário para o final do dia
   } else if (pFormat == "week") {
     //For weeks, what is the last logical boundary?
     vDate.setDate(vDate.getDate() + 1);

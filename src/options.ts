@@ -41,7 +41,7 @@ export const includeGetSet = function () {
     this.vUseSingleCell = pVal * 1;
   };
   this.setFormatArr = function () {
-    let vValidFormats = "hour day twoDays week month quarter";
+    let vValidFormats = "hour day week month quarter";
     this.vFormatArr = new Array();
     for (let i = 0, j = 0; i < arguments.length; i++) {
       if (
@@ -145,12 +145,6 @@ export const includeGetSet = function () {
   };
   this.setDayMinorDateDisplayFormat = function (pVal) {
     this.vDayMinorDateDisplayFormat = parseDateFormatStr(pVal);
-  };
-  this.setTwoDaysMajorDateDisplayFormat = function (pVal) {
-    this.vTwoDaysMajorDateDisplayFormat = parseDateFormatStr(pVal);
-  };
-  this.setTwoDaysMinorDateDisplayFormat = function (pVal) {
-    this.vTwoDaysMinorDateDisplayFormat = parseDateFormatStr(pVal);
   };
   this.setWeekMajorDateDisplayFormat = function (pVal) {
     this.vWeekMajorDateDisplayFormat = parseDateFormatStr(pVal);
@@ -407,12 +401,6 @@ export const includeGetSet = function () {
   };
   this.getDayMinorDateDisplayFormat = function () {
     return this.vDayMinorDateDisplayFormat;
-  };
-  this.getTwoDaysMajorDateDisplayFormat = function () {
-    return this.vTwoDaysMajorDateDisplayFormat;
-  };
-  this.getTwoDaysMinorDateDisplayFormat = function () {
-    return this.vTwoDaysMinorDateDisplayFormat;
   };
   this.getWeekMajorDateDisplayFormat = function () {
     return this.vWeekMajorDateDisplayFormat;

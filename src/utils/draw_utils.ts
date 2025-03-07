@@ -204,19 +204,6 @@ export const drawSelector = function (pPos) {
         )
       );
 
-    if (this.vFormatArr.join().toLowerCase().indexOf("twodays") != -1)
-      addFormatListeners(
-        this,
-        "twodays",
-        newNode(
-          vTmpDiv,
-          "span",
-          this.vDivId + "formattwodays" + pPos,
-          "gformlabel" + (this.vFormat == "twodays" ? "gselected" : ""),
-          this.vLangs[this.vLang]["twodays"]
-        )
-      );
-
     if (this.vFormatArr.join().toLowerCase().indexOf("week") != -1)
       addFormatListeners(
         this,

@@ -155,26 +155,10 @@ export const GanttChart = function (pDiv, pFormat) {
   this.vQuarterMajorDateDisplayFormat = parseDateFormatStr("yyyy");
   this.vQuarterMinorDateDisplayFormat = parseDateFormatStr("qq");
   this.vUseFullYear = parseDateFormatStr("dd/mm/yyyy");
-  // New formats added by Christian
-  this.vTwoDaysMajorDateDisplayFormat = parseDateFormatStr("dd/mm");
-  this.vTwoDaysMinorDateDisplayFormat = parseDateFormatStr("dd");
-  this.vTwoWeeksMajorDateDisplayFormat = parseDateFormatStr("yyyy");
-  this.vTwoWeeksMinorDateDisplayFormat = parseDateFormatStr("dd/mm");
-  this.vTwoMonthsMajorDateDisplayFormat = parseDateFormatStr("yyyy");
-  this.vTwoMonthsMinorDateDisplayFormat = parseDateFormatStr("mm/yyyy");
   this.vCaptionType;
   this.vDepId = 1;
   this.vTaskList = new Array();
-  this.vFormatArr = new Array(
-    "hour",
-    "day",
-    "twodays",
-    "week",
-    "twoWeeks",
-    "month",
-    "twoMonths",
-    "quarter"
-  );
+  this.vFormatArr = new Array("hour", "day", "week", "month", "quarter");
   this.vMonthDaysArr = new Array(
     31,
     28,
@@ -194,7 +178,6 @@ export const GanttChart = function (pDiv, pFormat) {
   this.vScrollTo = "";
   this.vHourColWidth = 18;
   this.vDayColWidth = 18;
-  this.vTwoDaysColWidth = 36;
   this.vWeekColWidth = 36;
   this.vMonthColWidth = 36;
   this.vQuarterColWidth = 18;
@@ -623,60 +606,6 @@ export const GanttChart = function (pDiv, pFormat) {
         );
 
         vTmpDate.setDate(vTmpDate.getDate() + 1);
-      } else if (this.vFormat === "twodays") {
-        let colspan = 2; // Grupo de 2 dias
-        let vTmpCell = newNode(
-          vTmpRow,
-          "td",
-          null,
-          vHeaderCellClass,
-          null,
-          null,
-          null,
-          null,
-          colspan
-        );
-
-        // Data inicial do intervalo
-        vCellContents += formatDateStr(
-          vTmpDate,
-          this.vTwoDaysMajorDateDisplayFormat, // Ex: "dd/mm"
-          this.vLangs[this.vLang]
-        );
-
-        // Calcula a data final (dia seguinte)
-        let vEndDate = new Date(vTmpDate);
-        vEndDate.setDate(vEndDate.getDate() + 1);
-
-        // Verifica se a data final não ultrapassa a data máxima
-        if (vEndDate > vMaxDate) {
-          vEndDate = vMaxDate; // Limita ao máximo
-          vCellContents = formatDateStr(
-            vTmpDate,
-            this.vTwoDaysMajorDateDisplayFormat,
-            this.vLangs[this.vLang]
-          ); // Exibe apenas um dia
-        } else {
-          vCellContents +=
-            " - " +
-            formatDateStr(
-              vEndDate,
-              this.vTwoDaysMajorDateDisplayFormat,
-              this.vLangs[this.vLang]
-            );
-        }
-
-        newNode(
-          vTmpCell,
-          "div",
-          null,
-          null,
-          vCellContents,
-          vColWidth * colspan
-        );
-
-        // Avança 2 dias para o próximo grupo
-        vTmpDate.setDate(vTmpDate.getDate() + 2);
       } else if (this.vFormat == "week") {
         const vTmpCell = newNode(
           vTmpRow,
@@ -832,34 +761,6 @@ export const GanttChart = function (pDiv, pFormat) {
         }
 
         vTmpDate.setDate(vTmpDate.getDate() + 1);
-      } else if (this.vFormat === "twodays") {
-        // Verifica se é final de semana
-        if (vTmpDate.getDay() % 6 === 0) {
-          if (!this.vShowWeekends) {
-            vTmpDate.setDate(vTmpDate.getDate() + 1);
-            continue; // Pula se finais de semana estiverem ocultos
-          }
-          vMinorHeaderCellClass += "wkend";
-        }
-
-        if (vTmpDate <= vMaxDate) {
-          const vTmpCell = newNode(vTmpRow, "td", null, vMinorHeaderCellClass);
-          newNode(
-            vTmpCell,
-            "div",
-            null,
-            null,
-            formatDateStr(
-              vTmpDate,
-              this.vTwoDaysMinorDateDisplayFormat, // Ex: "dd (ddd)"
-              this.vLangs[this.vLang]
-            ),
-            vColWidth
-          );
-          vNumCols++;
-        }
-
-        vTmpDate.setDate(vTmpDate.getDate() + 1); // Avança 1 dia
       } else if (this.vFormat == "week") {
         if (vTmpDate <= vMaxDate) {
           const vTmpCell = newNode(vTmpRow, "td", null, vMinorHeaderCellClass);
@@ -1714,7 +1615,6 @@ export const GanttChart = function (pDiv, pFormat) {
 
     // Calculate chart width variables.
     if (this.vFormat == "day") vColWidth = this.vDayColWidth;
-    else if (this.vFormat == "twodays") vColWidth = this.vTwoDaysColWidth;
     else if (this.vFormat == "week") vColWidth = this.vWeekColWidth;
     else if (this.vFormat == "month") vColWidth = this.vMonthColWidth;
     else if (this.vFormat == "quarter") vColWidth = this.vQuarterColWidth;

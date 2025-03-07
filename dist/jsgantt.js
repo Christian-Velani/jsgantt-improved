@@ -115,24 +115,16 @@ exports.GanttChart = function (pDiv, pFormat) {
     this.vQuarterMajorDateDisplayFormat = date_utils_1.parseDateFormatStr("yyyy");
     this.vQuarterMinorDateDisplayFormat = date_utils_1.parseDateFormatStr("qq");
     this.vUseFullYear = date_utils_1.parseDateFormatStr("dd/mm/yyyy");
-    // New formats added by Christian
-    this.vTwoDaysMajorDateDisplayFormat = date_utils_1.parseDateFormatStr("dd/mm");
-    this.vTwoDaysMinorDateDisplayFormat = date_utils_1.parseDateFormatStr("dd");
-    this.vTwoWeeksMajorDateDisplayFormat = date_utils_1.parseDateFormatStr("yyyy");
-    this.vTwoWeeksMinorDateDisplayFormat = date_utils_1.parseDateFormatStr("dd/mm");
-    this.vTwoMonthsMajorDateDisplayFormat = date_utils_1.parseDateFormatStr("yyyy");
-    this.vTwoMonthsMinorDateDisplayFormat = date_utils_1.parseDateFormatStr("mm/yyyy");
     this.vCaptionType;
     this.vDepId = 1;
     this.vTaskList = new Array();
-    this.vFormatArr = new Array("hour", "day", "twodays", "week", "twoWeeks", "month", "twoMonths", "quarter");
+    this.vFormatArr = new Array("hour", "day", "week", "month", "quarter");
     this.vMonthDaysArr = new Array(31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31);
     this.vProcessNeeded = true;
     this.vMinGpLen = 8;
     this.vScrollTo = "";
     this.vHourColWidth = 18;
     this.vDayColWidth = 18;
-    this.vTwoDaysColWidth = 20;
     this.vWeekColWidth = 36;
     this.vMonthColWidth = 36;
     this.vQuarterColWidth = 18;
@@ -361,29 +353,6 @@ exports.GanttChart = function (pDiv, pFormat) {
                 draw_utils_1.newNode(vTmpCell, "div", null, null, vCellContents, vColWidth * colspan);
                 vTmpDate.setDate(vTmpDate.getDate() + 1);
             }
-            else if (this.vFormat === "twodays") {
-                var colspan = 4; // Grupo de 2 dias
-                var vTmpCell = draw_utils_1.newNode(vTmpRow, "td", null, vHeaderCellClass, null, null, null, null, colspan);
-                // Data inicial do intervalo
-                vCellContents += date_utils_1.formatDateStr(vTmpDate, this.vTwoDaysMajorDateDisplayFormat, // Ex: "dd/mm"
-                this.vLangs[this.vLang]);
-                // Calcula a data final (dia seguinte)
-                var vEndDate = new Date(vTmpDate);
-                vEndDate.setDate(vEndDate.getDate() + 1);
-                // Verifica se a data final não ultrapassa a data máxima
-                if (vEndDate > vMaxDate) {
-                    vEndDate = vMaxDate; // Limita ao máximo
-                    vCellContents = date_utils_1.formatDateStr(vTmpDate, this.vTwoDaysMajorDateDisplayFormat, this.vLangs[this.vLang]); // Exibe apenas um dia
-                }
-                else {
-                    vCellContents +=
-                        " - " +
-                            date_utils_1.formatDateStr(vEndDate, this.vTwoDaysMajorDateDisplayFormat, this.vLangs[this.vLang]);
-                }
-                draw_utils_1.newNode(vTmpCell, "div", null, null, vCellContents, vColWidth * colspan);
-                // Avança 2 dias para o próximo grupo
-                vTmpDate.setDate(vTmpDate.getDate() + 2);
-            }
             else if (this.vFormat == "week") {
                 var vTmpCell = draw_utils_1.newNode(vTmpRow, "td", null, vHeaderCellClass, null, vColWidth);
                 draw_utils_1.newNode(vTmpCell, "div", null, null, date_utils_1.formatDateStr(vTmpDate, this.vWeekMajorDateDisplayFormat, this.vLangs[this.vLang]), vColWidth);
@@ -439,23 +408,6 @@ exports.GanttChart = function (pDiv, pFormat) {
                     vNumCols++;
                 }
                 vTmpDate.setDate(vTmpDate.getDate() + 1);
-            }
-            else if (this.vFormat === "twodays") {
-                // Verifica se é final de semana
-                if (vTmpDate.getDay() % 6 === 0) {
-                    if (!this.vShowWeekends) {
-                        vTmpDate.setDate(vTmpDate.getDate() + 1);
-                        continue; // Pula se finais de semana estiverem ocultos
-                    }
-                    vMinorHeaderCellClass += "wkend";
-                }
-                if (vTmpDate <= vMaxDate) {
-                    var vTmpCell = draw_utils_1.newNode(vTmpRow, "td", null, vMinorHeaderCellClass);
-                    draw_utils_1.newNode(vTmpCell, "div", null, null, date_utils_1.formatDateStr(vTmpDate, this.vTwoDaysMinorDateDisplayFormat, // Ex: "dd (ddd)"
-                    this.vLangs[this.vLang]), vColWidth);
-                    vNumCols++;
-                }
-                vTmpDate.setDate(vTmpDate.getDate() + 1); // Avança 1 dia
             }
             else if (this.vFormat == "week") {
                 if (vTmpDate <= vMaxDate) {
@@ -849,8 +801,6 @@ exports.GanttChart = function (pDiv, pFormat) {
         // Calculate chart width variables.
         if (this.vFormat == "day")
             vColWidth = this.vDayColWidth;
-        else if (this.vFormat == "twodays")
-            vColWidth = this.vTwoDaysColWidth;
         else if (this.vFormat == "week")
             vColWidth = this.vWeekColWidth;
         else if (this.vFormat == "month")
@@ -3701,7 +3651,7 @@ exports.includeGetSet = function () {
         this.vUseSingleCell = pVal * 1;
     };
     this.setFormatArr = function () {
-        var vValidFormats = "hour day twoDays week month quarter";
+        var vValidFormats = "hour day week month quarter";
         this.vFormatArr = new Array();
         for (var i = 0, j = 0; i < arguments.length; i++) {
             if (vValidFormats.indexOf(arguments[i].toLowerCase()) != -1 &&
@@ -3801,12 +3751,6 @@ exports.includeGetSet = function () {
     };
     this.setDayMinorDateDisplayFormat = function (pVal) {
         this.vDayMinorDateDisplayFormat = date_utils_1.parseDateFormatStr(pVal);
-    };
-    this.setTwoDaysMajorDateDisplayFormat = function (pVal) {
-        this.vTwoDaysMajorDateDisplayFormat = date_utils_1.parseDateFormatStr(pVal);
-    };
-    this.setTwoDaysMinorDateDisplayFormat = function (pVal) {
-        this.vTwoDaysMinorDateDisplayFormat = date_utils_1.parseDateFormatStr(pVal);
     };
     this.setWeekMajorDateDisplayFormat = function (pVal) {
         this.vWeekMajorDateDisplayFormat = date_utils_1.parseDateFormatStr(pVal);
@@ -4058,12 +4002,6 @@ exports.includeGetSet = function () {
     };
     this.getDayMinorDateDisplayFormat = function () {
         return this.vDayMinorDateDisplayFormat;
-    };
-    this.getTwoDaysMajorDateDisplayFormat = function () {
-        return this.vTwoDaysMajorDateDisplayFormat;
-    };
-    this.getTwoDaysMinorDateDisplayFormat = function () {
-        return this.vTwoDaysMinorDateDisplayFormat;
     };
     this.getWeekMajorDateDisplayFormat = function () {
         return this.vWeekMajorDateDisplayFormat;
@@ -4532,9 +4470,6 @@ exports.TaskItem = function (pID, pName, pStart, pEnd, pClass, pLink, pMile, pRe
             case "quarter":
                 vUnits = "month";
                 break;
-            case "twodays": // Novo caso para formato de 2 dias
-                vUnits = "twodays";
-                break;
             default:
                 vUnits = pFormat;
                 break;
@@ -4554,11 +4489,6 @@ exports.TaskItem = function (pID, pName, pStart, pEnd, pClass, pLink, pMile, pRe
             case "day":
                 tmpPer = Math.round(hours / 24);
                 vDuration = tmpPer + " " + (tmpPer != 1 ? pLang["dys"] : pLang["dy"]);
-                break;
-            case "twodays": // Cálculo para blocos de 2 dias
-                tmpPer = Math.round(hours / 48); // 48 horas = 2 dias
-                vDuration =
-                    tmpPer + " " + (tmpPer != 1 ? pLang["twodys"] : pLang["twody"]);
                 break;
             case "week":
                 tmpPer = Math.round(hours / 24 / 7);
@@ -5120,13 +5050,6 @@ exports.getMinDate = function (pList, pFormat, pMinDate) {
         while (vDate.getDay() % 7 != 1)
             vDate.setDate(vDate.getDate() - 1);
     }
-    else if (pFormat === "twodays") {
-        // Calcula o número de dias desde a época (1º de Janeiro de 1970)
-        var daysSinceEpoch = Math.floor(vDate.getTime() / 86400000); // 86400000 ms = 1 dia
-        var remainder = daysSinceEpoch % 2; // Resto 0 ou 1
-        vDate.setDate(vDate.getDate() - remainder); // Alinha ao início do bloco de 2 dias
-        vDate.setHours(0, 0, 0); // Define hora como 00:00:00
-    }
     else if (pFormat == "week") {
         vDate.setDate(vDate.getDate() - 1);
         while (vDate.getDay() % 7 != 1)
@@ -5183,13 +5106,6 @@ exports.getMaxDate = function (pList, pFormat, pMaxDate) {
         vDate.setDate(vDate.getDate() + 1);
         while (vDate.getDay() % 7 != 0)
             vDate.setDate(vDate.getDate() + 1);
-    }
-    else if (pFormat === "twodays") {
-        // Calcula o número de dias desde a época (1º de Janeiro de 1970)
-        var daysSinceEpoch = Math.floor(vDate.getTime() / 86400000);
-        var remainder = daysSinceEpoch % 2; // Resto 0 ou 1
-        vDate.setDate(vDate.getDate() + (1 - remainder)); // Alinha ao final do bloco
-        vDate.setHours(23, 59, 59, 999); // Define horário para o final do dia
     }
     else if (pFormat == "week") {
         //For weeks, what is the last logical boundary?
@@ -5583,8 +5499,6 @@ exports.drawSelector = function (pPos) {
             events_1.addFormatListeners(this, "hour", exports.newNode(vTmpDiv, "span", this.vDivId + "formathour" + pPos, "gformlabel" + (this.vFormat == "hour" ? " gselected" : ""), this.vLangs[this.vLang]["hour"]));
         if (this.vFormatArr.join().toLowerCase().indexOf("day") != -1)
             events_1.addFormatListeners(this, "day", exports.newNode(vTmpDiv, "span", this.vDivId + "formatday" + pPos, "gformlabel" + (this.vFormat == "day" ? " gselected" : ""), this.vLangs[this.vLang]["day"]));
-        if (this.vFormatArr.join().toLowerCase().indexOf("twodays") != -1)
-            events_1.addFormatListeners(this, "twodays", exports.newNode(vTmpDiv, "span", this.vDivId + "formattwodays" + pPos, "gformlabel" + (this.vFormat == "twodays" ? "gselected" : ""), this.vLangs[this.vLang]["twodays"]));
         if (this.vFormatArr.join().toLowerCase().indexOf("week") != -1)
             events_1.addFormatListeners(this, "week", exports.newNode(vTmpDiv, "span", this.vDivId + "formatweek" + pPos, "gformlabel" + (this.vFormat == "week" ? " gselected" : ""), this.vLangs[this.vLang]["week"]));
         if (this.vFormatArr.join().toLowerCase().indexOf("month") != -1)
@@ -5740,7 +5654,6 @@ exports.calculateCurrentDateOffset = function (curTaskStart, curTaskEnd) {
 };
 exports.getOffset = function (pStartDate, pEndDate, pColWidth, pFormat, pShowWeekends) {
     var DAY_CELL_MARGIN_WIDTH = 3; // Cell margin for 'day' format
-    var TWODAYS_CELL_MARGIN_WIDTH = 3;
     var WEEK_CELL_MARGIN_WIDTH = 3; // Cell margin for 'week' format
     var MONTH_CELL_MARGIN_WIDTH = 3; // Cell margin for 'month' format
     var QUARTER_CELL_MARGIN_WIDTH = 3; // Cell margin for 'quarter' format
@@ -5768,24 +5681,6 @@ exports.getOffset = function (pStartDate, pEndDate, pColWidth, pFormat, pShowWee
             vTaskRight -= countWeekends * 24;
         }
         vTaskRightPx = Math.ceil((vTaskRight / 24) * (pColWidth + DAY_CELL_MARGIN_WIDTH) - 1);
-    }
-    else if (pFormat === "twodays") {
-        if (!pShowWeekends) {
-            var start = curTaskStart;
-            var end = curTaskEnd;
-            var countWeekends = 0;
-            while (start < end) {
-                var day = start.getDay();
-                if (day === 6 || day === 0) {
-                    // Sábado ou Domingo
-                    countWeekends++;
-                }
-                start = new Date(start.getTime() + 24 * oneHour);
-            }
-            vTaskRight -= countWeekends * 24; // Remove horas de finais de semana
-        }
-        // Calcula o offset em blocos de 2 dias (48 horas)
-        vTaskRightPx = Math.ceil((vTaskRight / 48) * (pColWidth + TWODAYS_CELL_MARGIN_WIDTH) - 1);
     }
     else if (pFormat == "week") {
         vTaskRightPx = Math.ceil((vTaskRight / (24 * 7)) * (pColWidth + WEEK_CELL_MARGIN_WIDTH) - 1);
