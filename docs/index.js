@@ -5,18 +5,12 @@ let g;
 function start(e) {
   g = new JSGantt.GanttChart(document.getElementById("embedded-Gantt"), "week");
   if (g.getDivId() != null) {
-    const newDataurl = document.getElementById("dataurl").value
-      ? document.getElementById("dataurl").value
-      : "./fixes/data.json";
+    const newDataurl = document.getElementById("dataurl").value ? document.getElementById("dataurl").value : "./fixes/data.json";
     const vDebug = document.querySelector("#debug:checked") ? true : false;
     //vDebug = true;
-    const vEditable = document.querySelector("#editable:checked")
-      ? true
-      : false;
+    const vEditable = document.querySelector("#editable:checked") ? true : false;
     const vUseSort = document.querySelector("#sort:checked") ? true : false;
-    const newtooltiptemplate = document.getElementById("tooltiptemplate").value
-      ? document.getElementById("tooltiptemplate").value
-      : null;
+    const newtooltiptemplate = document.getElementById("tooltiptemplate").value ? document.getElementById("tooltiptemplate").value : null;
     let vColumnOrder;
     if (document.querySelector("#vColumnOrder").value) {
       vColumnOrder = document.querySelector("#vColumnOrder").value.split(",");
@@ -31,25 +25,15 @@ function start(e) {
     vUseSingleCell = document.getElementById("useSingleCell").value;
     vShowRes = document.querySelector("#vShowRes:checked") ? 1 : 0;
     vShowCost = document.querySelector("#vShowCost:checked") ? 1 : 0;
-    vShowAddEntries = document.querySelector("#vShowAddEntries:checked")
-      ? 1
-      : 0;
+    vShowAddEntries = document.querySelector("#vShowAddEntries:checked") ? 1 : 0;
     vShowComp = document.querySelector("#vShowComp:checked") ? 1 : 0;
     vShowDur = document.querySelector("#vShowDur:checked") ? 1 : 0;
     vShowStartDate = document.querySelector("#vShowStartDate:checked") ? 1 : 0;
     vShowEndDate = document.querySelector("#vShowEndDate:checked") ? 1 : 0;
-    vShowPlanStartDate = document.querySelector("#vShowPlanStartDate:checked")
-      ? 1
-      : 0;
-    vShowPlanEndDate = document.querySelector("#vShowPlanEndDate:checked")
-      ? 1
-      : 0;
-    vShowTaskInfoLink = document.querySelector("#vShowTaskInfoLink:checked")
-      ? 1
-      : 0;
-    vShowEndWeekDate = document.querySelector("#vShowEndWeekDate:checked")
-      ? 1
-      : 0;
+    vShowPlanStartDate = document.querySelector("#vShowPlanStartDate:checked") ? 1 : 0;
+    vShowPlanEndDate = document.querySelector("#vShowPlanEndDate:checked") ? 1 : 0;
+    vShowTaskInfoLink = document.querySelector("#vShowTaskInfoLink:checked") ? 1 : 0;
+    vShowEndWeekDate = document.querySelector("#vShowEndWeekDate:checked") ? 1 : 0;
     vTotalHeight = document.querySelector("#vTotalHeight").value || undefined;
 
     vShowWeekends = document.querySelector("#vShowWeekends:checked") ? 1 : 0;
@@ -131,15 +115,13 @@ function start(e) {
       vShowEndWeekDate, // Show/Hide the date for the last day of the week in header for daily view (1/0)
       vShowWeekends, // Show weekends days in the vFormat day
       vTooltipDelay: delay,
-      vTooltipTemplate: document.querySelector("#dynamicTooltip:checked")
-        ? generateTooltip
-        : newtooltiptemplate,
+      vTooltipTemplate: document.querySelector("#dynamicTooltip:checked") ? generateTooltip : newtooltiptemplate,
       vDebug,
       vEditable,
       vColumnOrder,
       vScrollTo,
       vUseSort,
-      vFormat: "month",
+      vFormat: "week",
       vFormatArr: ["Hour", "Day", "Week", "Month", "Quarter"], // Even with setUseSingleCell using Hour format on such a large chart can cause issues in some browsers
     });
     //DELAY FROM INPUT
@@ -185,11 +167,7 @@ function start(e) {
     //JSGantt.criticalPath(jsonObj)
     if (vDebug) {
       const ad = new Date();
-      console.log(
-        "after reloading: total time",
-        ad,
-        ad.getTime() - bd.getTime()
-      );
+      console.log("after reloading: total time", ad, ad.getTime() - bd.getTime());
     }
   } else {
     alert("Error, unable to create Gantt Chart");
@@ -205,8 +183,7 @@ function start(e) {
 }
 
 function scrollingTwoMains(mainMoving, mainMoved) {
-  document.getElementById(mainMoved).scrollTop =
-    document.getElementById(mainMoving).scrollTop;
+  document.getElementById(mainMoved).scrollTop = document.getElementById(mainMoving).scrollTop;
 }
 
 function clearTasks() {
@@ -215,10 +192,7 @@ function clearTasks() {
 }
 
 function printTasksInConsole() {
-  const tasks = g.vTaskList.map((e) => ({
-    ...e.getAllData(),
-    ...e.getDataObject(),
-  }));
+  const tasks = g.vTaskList.map((e) => ({ ...e.getAllData(), ...e.getDataObject() }));
   console.log(tasks);
 }
 
@@ -273,9 +247,7 @@ function generateTooltip(task) {
     return `
       <dl>
         <dt>Name:</dt><dd>{{pName}}</dd>
-        <dt>Complete child tasks:</dt><dd style="color:${
-          complete === childCount ? "green" : "red"
-        }">${complete}/${childCount}</dd>
+        <dt>Complete child tasks:</dt><dd style="color:${complete === childCount ? "green" : "red"}">${complete}/${childCount}</dd>
         <dt>Tooltip generated at:</dt><dd>${new Date()}</dd>
       </dl>
     `;
