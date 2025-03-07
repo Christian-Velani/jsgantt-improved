@@ -4683,12 +4683,9 @@ exports.processRows = function (pList, pID, pRow, pLevel, pOpen, pUseSort, vDebu
         if (vMinDate) {
             pList[pRow].setStart(vMinDate);
         }
-        console.log("Valor do Max Date: ", vMaxDate);
-        console.log("Valor da data pre mudança: ", pList[pRow].getEnd());
         // if (vMaxDate) {
         //   pList[pRow].setEnd(vMaxDate);
         // }
-        console.log("Valor da data pos mudança: ", pList[pRow].getEnd());
         if (pList[pRow].getGroupMinPlanStart() != null &&
             pList[pRow].getGroupMinPlanStart() < vMinPlanDate) {
             vMinPlanDate = pList[pRow].getGroupMinPlanStart();
@@ -4700,9 +4697,9 @@ exports.processRows = function (pList, pID, pRow, pLevel, pOpen, pUseSort, vDebu
         if (vMinPlanDate) {
             pList[pRow].setPlanStart(vMinPlanDate);
         }
-        if (vMaxPlanDate) {
-            pList[pRow].setPlanEnd(vMaxPlanDate);
-        }
+        // if (vMaxPlanDate) {
+        //   pList[pRow].setPlanEnd(vMaxPlanDate);
+        // }
         pList[pRow].setNumKid(vNumKid);
         pList[pRow].setWeight(vWeight);
         pList[pRow].setCompVal(Math.ceil(vCompSum / vWeight));
