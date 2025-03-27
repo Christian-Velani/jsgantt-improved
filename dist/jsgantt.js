@@ -913,7 +913,7 @@ exports.GanttChart = function (pDiv, pFormat) {
             console.info("after DrawDependencies", ad, ad.getTime() - bdd.getTime());
         }
         this.drawComplete(vMinDate, vColWidth, bd);
-        this.associatMouseWheelEvents();
+        // this.associatMouseWheelEvents();
         events_1.addListener("mousedown", events_1.startResize, general_utils_1.findObj("gmain-resize-handle"));
         events_1.addListener("touchstart", events_1.startResize, general_utils_1.findObj("gmain-resize-handle"));
     };
@@ -933,14 +933,18 @@ exports.GanttChart = function (pDiv, pFormat) {
             this.vEvents.afterDraw();
         }
     };
-    this.associatMouseWheelEvents = function () {
-        var _this = this;
-        var taskArea = document.getElementById(this.vDivId + "chartTable") ||
-            document.querySelector(".gcharttable");
-        if (taskArea) {
-            events_1.addListener("wheel", function (event) { return events_1.handleWheelScroll.call(_this, event); }, taskArea);
-        }
-    };
+    // this.associatMouseWheelEvents = function () {
+    //   const taskArea =
+    //     document.getElementById(this.vDivId + "chartTable") ||
+    //     document.querySelector(".gcharttable");
+    //   if (taskArea) {
+    //     addListener(
+    //       "wheel",
+    //       (event) => handleWheelScroll.call(this, event),
+    //       taskArea
+    //     );
+    //   }
+    // };
     if (this.vDiv &&
         this.vDiv.nodeName &&
         this.vDiv.nodeName.toLowerCase() == "div")
@@ -1217,7 +1221,7 @@ exports.DrawDependencies = function (vDebug) {
 },{}],5:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.addListenerDependencies = exports.addListenerInputCell = exports.addListenerClickCell = exports.addScrollListeners = exports.addFormatListeners = exports.addFolderListeners = exports.updateGridHeaderWidth = exports.addThisRowListeners = exports.addTooltipListeners = exports.syncScroll = exports.removeListener = exports.addListener = exports.startResize = exports.showToolTip = exports.mouseOut = exports.mouseOver = exports.show = exports.handleWheelScroll = exports.hide = exports.folder = void 0;
+exports.addListenerDependencies = exports.addListenerInputCell = exports.addListenerClickCell = exports.addScrollListeners = exports.addFormatListeners = exports.addFolderListeners = exports.updateGridHeaderWidth = exports.addThisRowListeners = exports.addTooltipListeners = exports.syncScroll = exports.removeListener = exports.addListener = exports.startResize = exports.showToolTip = exports.mouseOut = exports.mouseOver = exports.show = exports.hide = exports.folder = void 0;
 var general_utils_1 = require("./utils/general_utils");
 // Function to open/close and hide/show children of specified task
 exports.folder = function (pID, ganttObj) {
@@ -1272,27 +1276,26 @@ exports.hide = function (pID, ganttObj) {
         }
     }
 };
-exports.handleWheelScroll = function (event) {
-    if (event.shiftKey) {
-        // Permitir rolagem horizontal normal quando Shift estiver pressionado
-        return;
-    }
-    event.preventDefault();
-    var delta = Math.sign(event.deltaY);
-    var currentFormat = this.vFormat;
-    var currentIndex = this.vFormatArr.indexOf(currentFormat);
-    var newIndex = currentIndex;
-    if (delta > 0) {
-        newIndex = Math.min(currentIndex + 1, this.vFormatArr.length - 1);
-    }
-    else {
-        newIndex = Math.max(currentIndex - 1, 0);
-    }
-    if (newIndex !== currentIndex) {
-        var newFormat = this.vFormatArr[newIndex];
-        general_utils_1.changeFormat(newFormat, this);
-    }
-};
+// export const handleWheelScroll = function (event: WheelEvent) {
+//   if (event.shiftKey) {
+//     // Permitir rolagem horizontal normal quando Shift estiver pressionado
+//     return;
+//   }
+//   event.preventDefault();
+//   const delta = Math.sign(event.deltaY);
+//   const currentFormat = this.vFormat;
+//   const currentIndex = this.vFormatArr.indexOf(currentFormat);
+//   let newIndex = currentIndex;
+//   if (delta > 0) {
+//     newIndex = Math.min(currentIndex + 1, this.vFormatArr.length - 1);
+//   } else {
+//     newIndex = Math.max(currentIndex - 1, 0);
+//   }
+//   if (newIndex !== currentIndex) {
+//     const newFormat = this.vFormatArr[newIndex];
+//     changeFormat(newFormat, this);
+//   }
+// };
 // Function to show children of specified task
 exports.show = function (pID, pTop, ganttObj) {
     var vList = ganttObj.getList();
@@ -1502,39 +1505,109 @@ exports.syncScroll = function (elements, attrName) {
         el.addEventListener("scroll", scrollEvent);
     }
 };
+// OLD VERSION OF TOOLTIP LISTENERS
+// export const addTooltipListeners = function (
+//   pGanttChart,
+//   pObj1,
+//   pObj2,
+//   callback
+// ) {
+//   let isShowingTooltip = false;
+//   addListener(
+//     "mouseover",
+//     function (e) {
+//       if (isShowingTooltip || !callback) {
+//         showToolTip(pGanttChart, e, pObj2, null, pGanttChart.getTimer());
+//       } else if (callback) {
+//         isShowingTooltip = true;
+//         const promise = callback();
+//         showToolTip(pGanttChart, e, pObj2, null, pGanttChart.getTimer());
+//         if (promise && promise.then) {
+//           promise.then(() => {
+//             if (
+//               pGanttChart.vTool.vToolCont.getAttribute("showing") ===
+//                 pObj2.id &&
+//               pGanttChart.vTool.style.visibility === "visible"
+//             ) {
+//               showToolTip(pGanttChart, e, pObj2, null, pGanttChart.getTimer());
+//             }
+//           });
+//         }
+//       }
+//     },
+//     pObj1
+//   );
+//   addListener(
+//     "mouseout",
+//     function (e) {
+//       const outTo = e.relatedTarget;
+//       if (
+//         isParentElementOrSelf(outTo, pObj1) ||
+//         (pGanttChart.vTool && isParentElementOrSelf(outTo, pGanttChart.vTool))
+//       ) {
+//         // not actually out
+//       } else {
+//         isShowingTooltip = false;
+//       }
+//       delayedHide(pGanttChart, pGanttChart.vTool, pGanttChart.getTimer());
+//     },
+//     pObj1
+//   );
+// };
 exports.addTooltipListeners = function (pGanttChart, pObj1, pObj2, callback) {
     var isShowingTooltip = false;
-    exports.addListener("mouseover", function (e) {
-        if (isShowingTooltip || !callback) {
-            exports.showToolTip(pGanttChart, e, pObj2, null, pGanttChart.getTimer());
+    // Listener para clique no elemento
+    exports.addListener("click", function (e) {
+        e.stopPropagation(); // Impede a propagação para o documento
+        if (isShowingTooltip) {
+            // Se já está visível, oculta
+            hideTooltip(pGanttChart);
+            isShowingTooltip = false;
         }
-        else if (callback) {
-            isShowingTooltip = true;
-            var promise = callback();
-            exports.showToolTip(pGanttChart, e, pObj2, null, pGanttChart.getTimer());
-            if (promise && promise.then) {
-                promise.then(function () {
-                    if (pGanttChart.vTool.vToolCont.getAttribute("showing") ===
-                        pObj2.id &&
-                        pGanttChart.vTool.style.visibility === "visible") {
+        else {
+            // Se não está visível, exibe
+            if (callback) {
+                var promise = callback();
+                if (promise && promise.then) {
+                    promise.then(function () {
                         exports.showToolTip(pGanttChart, e, pObj2, null, pGanttChart.getTimer());
-                    }
-                });
+                        isShowingTooltip = true;
+                    });
+                }
+                else {
+                    exports.showToolTip(pGanttChart, e, pObj2, null, pGanttChart.getTimer());
+                    isShowingTooltip = true;
+                }
+            }
+            else {
+                exports.showToolTip(pGanttChart, e, pObj2, null, pGanttChart.getTimer());
+                isShowingTooltip = true;
             }
         }
     }, pObj1);
-    exports.addListener("mouseout", function (e) {
-        var outTo = e.relatedTarget;
-        if (general_utils_1.isParentElementOrSelf(outTo, pObj1) ||
-            (pGanttChart.vTool && general_utils_1.isParentElementOrSelf(outTo, pGanttChart.vTool))) {
-            // not actually out
-        }
-        else {
+    // Listener para clique fora do elemento/tooltip
+    document.addEventListener("click", function (e) {
+        if (!general_utils_1.isParentElementOrSelf(e.target, pObj1) &&
+            !general_utils_1.isParentElementOrSelf(e.target, pGanttChart.vTool)) {
+            hideTooltip(pGanttChart);
             isShowingTooltip = false;
         }
-        general_utils_1.delayedHide(pGanttChart, pGanttChart.vTool, pGanttChart.getTimer());
-    }, pObj1);
+    });
+    // Listener para tecla ESC
+    document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape") {
+            hideTooltip(pGanttChart);
+            isShowingTooltip = false;
+        }
+    });
 };
+// Função auxiliar para ocultar o tooltip
+function hideTooltip(pGanttChart) {
+    if (pGanttChart.vTool) {
+        pGanttChart.vTool.style.visibility = "hidden";
+        pGanttChart.vTool.vToolCont.setAttribute("showing", "");
+    }
+}
 exports.addThisRowListeners = function (pGanttChart, pObj1, pObj2) {
     exports.addListener("mouseover", function () {
         pGanttChart.mouseOver(pObj1, pObj2);

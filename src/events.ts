@@ -63,29 +63,29 @@ export const hide = function (pID, ganttObj) {
   }
 };
 
-export const handleWheelScroll = function (event: WheelEvent) {
-  if (event.shiftKey) {
-    // Permitir rolagem horizontal normal quando Shift estiver pressionado
-    return;
-  }
-  event.preventDefault();
+// export const handleWheelScroll = function (event: WheelEvent) {
+//   if (event.shiftKey) {
+//     // Permitir rolagem horizontal normal quando Shift estiver pressionado
+//     return;
+//   }
+//   event.preventDefault();
 
-  const delta = Math.sign(event.deltaY);
-  const currentFormat = this.vFormat;
-  const currentIndex = this.vFormatArr.indexOf(currentFormat);
+//   const delta = Math.sign(event.deltaY);
+//   const currentFormat = this.vFormat;
+//   const currentIndex = this.vFormatArr.indexOf(currentFormat);
 
-  let newIndex = currentIndex;
-  if (delta > 0) {
-    newIndex = Math.min(currentIndex + 1, this.vFormatArr.length - 1);
-  } else {
-    newIndex = Math.max(currentIndex - 1, 0);
-  }
+//   let newIndex = currentIndex;
+//   if (delta > 0) {
+//     newIndex = Math.min(currentIndex + 1, this.vFormatArr.length - 1);
+//   } else {
+//     newIndex = Math.max(currentIndex - 1, 0);
+//   }
 
-  if (newIndex !== currentIndex) {
-    const newFormat = this.vFormatArr[newIndex];
-    changeFormat(newFormat, this);
-  }
-};
+//   if (newIndex !== currentIndex) {
+//     const newFormat = this.vFormatArr[newIndex];
+//     changeFormat(newFormat, this);
+//   }
+// };
 
 // Function to show children of specified task
 export const show = function (pID, pTop, ganttObj) {
@@ -332,6 +332,59 @@ export const syncScroll = function (elements, attrName) {
   }
 };
 
+// OLD VERSION OF TOOLTIP LISTENERS
+// export const addTooltipListeners = function (
+//   pGanttChart,
+//   pObj1,
+//   pObj2,
+//   callback
+// ) {
+//   let isShowingTooltip = false;
+
+//   addListener(
+//     "mouseover",
+//     function (e) {
+//       if (isShowingTooltip || !callback) {
+//         showToolTip(pGanttChart, e, pObj2, null, pGanttChart.getTimer());
+//       } else if (callback) {
+//         isShowingTooltip = true;
+//         const promise = callback();
+//         showToolTip(pGanttChart, e, pObj2, null, pGanttChart.getTimer());
+//         if (promise && promise.then) {
+//           promise.then(() => {
+//             if (
+//               pGanttChart.vTool.vToolCont.getAttribute("showing") ===
+//                 pObj2.id &&
+//               pGanttChart.vTool.style.visibility === "visible"
+//             ) {
+//               showToolTip(pGanttChart, e, pObj2, null, pGanttChart.getTimer());
+//             }
+//           });
+//         }
+//       }
+//     },
+//     pObj1
+//   );
+
+//   addListener(
+//     "mouseout",
+//     function (e) {
+//       const outTo = e.relatedTarget;
+//       if (
+//         isParentElementOrSelf(outTo, pObj1) ||
+//         (pGanttChart.vTool && isParentElementOrSelf(outTo, pGanttChart.vTool))
+//       ) {
+//         // not actually out
+//       } else {
+//         isShowingTooltip = false;
+//       }
+
+//       delayedHide(pGanttChart, pGanttChart.vTool, pGanttChart.getTimer());
+//     },
+//     pObj1
+//   );
+// };
+
 export const addTooltipListeners = function (
   pGanttChart,
   pObj1,
@@ -340,49 +393,64 @@ export const addTooltipListeners = function (
 ) {
   let isShowingTooltip = false;
 
+  // Listener para clique no elemento
   addListener(
-    "mouseover",
+    "click",
     function (e) {
-      if (isShowingTooltip || !callback) {
-        showToolTip(pGanttChart, e, pObj2, null, pGanttChart.getTimer());
-      } else if (callback) {
-        isShowingTooltip = true;
-        const promise = callback();
-        showToolTip(pGanttChart, e, pObj2, null, pGanttChart.getTimer());
-        if (promise && promise.then) {
-          promise.then(() => {
-            if (
-              pGanttChart.vTool.vToolCont.getAttribute("showing") ===
-                pObj2.id &&
-              pGanttChart.vTool.style.visibility === "visible"
-            ) {
+      e.stopPropagation(); // Impede a propagação para o documento
+      if (isShowingTooltip) {
+        // Se já está visível, oculta
+        hideTooltip(pGanttChart);
+        isShowingTooltip = false;
+      } else {
+        // Se não está visível, exibe
+        if (callback) {
+          const promise = callback();
+          if (promise && promise.then) {
+            promise.then(() => {
               showToolTip(pGanttChart, e, pObj2, null, pGanttChart.getTimer());
-            }
-          });
+              isShowingTooltip = true;
+            });
+          } else {
+            showToolTip(pGanttChart, e, pObj2, null, pGanttChart.getTimer());
+            isShowingTooltip = true;
+          }
+        } else {
+          showToolTip(pGanttChart, e, pObj2, null, pGanttChart.getTimer());
+          isShowingTooltip = true;
         }
       }
     },
     pObj1
   );
 
-  addListener(
-    "mouseout",
-    function (e) {
-      const outTo = e.relatedTarget;
-      if (
-        isParentElementOrSelf(outTo, pObj1) ||
-        (pGanttChart.vTool && isParentElementOrSelf(outTo, pGanttChart.vTool))
-      ) {
-        // not actually out
-      } else {
-        isShowingTooltip = false;
-      }
+  // Listener para clique fora do elemento/tooltip
+  document.addEventListener("click", function (e) {
+    if (
+      !isParentElementOrSelf(e.target, pObj1) &&
+      !isParentElementOrSelf(e.target, pGanttChart.vTool)
+    ) {
+      hideTooltip(pGanttChart);
+      isShowingTooltip = false;
+    }
+  });
 
-      delayedHide(pGanttChart, pGanttChart.vTool, pGanttChart.getTimer());
-    },
-    pObj1
-  );
+  // Listener para tecla ESC
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") {
+      hideTooltip(pGanttChart);
+      isShowingTooltip = false;
+    }
+  });
 };
+
+// Função auxiliar para ocultar o tooltip
+function hideTooltip(pGanttChart) {
+  if (pGanttChart.vTool) {
+    pGanttChart.vTool.style.visibility = "hidden";
+    pGanttChart.vTool.vToolCont.setAttribute("showing", "");
+  }
+}
 
 export const addThisRowListeners = function (pGanttChart, pObj1, pObj2) {
   addListener(

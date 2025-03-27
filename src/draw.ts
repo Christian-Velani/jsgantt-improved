@@ -13,7 +13,7 @@ import {
   syncScroll,
   updateGridHeaderWidth,
   removeListener,
-  handleWheelScroll,
+  // handleWheelScroll,
   startResize,
 } from "./events";
 import {
@@ -1780,7 +1780,7 @@ export const GanttChart = function (pDiv, pFormat) {
     }
 
     this.drawComplete(vMinDate, vColWidth, bd);
-    this.associatMouseWheelEvents();
+    // this.associatMouseWheelEvents();
     addListener("mousedown", startResize, findObj("gmain-resize-handle"));
     addListener("touchstart", startResize, findObj("gmain-resize-handle"));
   };
@@ -1810,19 +1810,19 @@ export const GanttChart = function (pDiv, pFormat) {
     }
   };
 
-  this.associatMouseWheelEvents = function () {
-    const taskArea =
-      document.getElementById(this.vDivId + "chartTable") ||
-      document.querySelector(".gcharttable");
+  // this.associatMouseWheelEvents = function () {
+  //   const taskArea =
+  //     document.getElementById(this.vDivId + "chartTable") ||
+  //     document.querySelector(".gcharttable");
 
-    if (taskArea) {
-      addListener(
-        "wheel",
-        (event) => handleWheelScroll.call(this, event),
-        taskArea
-      );
-    }
-  };
+  //   if (taskArea) {
+  //     addListener(
+  //       "wheel",
+  //       (event) => handleWheelScroll.call(this, event),
+  //       taskArea
+  //     );
+  //   }
+  // };
 
   if (
     this.vDiv &&
