@@ -25,13 +25,23 @@ div.gantt {
 .gminorheading,
 .gminorheadingwkend,
 .gtaskcell,
-.gtaskcellcurrent,
-.gtaskcellwkend {
+.gtaskcellcurrent {
   height: 19px;
   font-size: 12px;
   border: #efefef 1px solid;
   text-align: center;
   cursor: default;
+}
+
+.gtaskcellwkend {
+  background: linear-gradient(
+      45deg,
+      transparent 48%,
+      #000000 50%,
+      transparent 52%
+    ),
+    #000000;
+  background-size: 10px 10px;
 }
 
 .gtasklist {
@@ -124,7 +134,7 @@ td.gspanning {
   top: 0px;
   opacity: 0.3;
   background: white;
-  z-index: 1;
+  z-index: 2;
   /* border: 1px solid black; */
 }
 
@@ -245,10 +255,10 @@ span.gfoldercollapse {
   background-color: #fffde5;
 }
 
-.gitemdifferent td {
+/* .gitemdifferent td {
   background-image: none;
   background-color: rgba(0, 0, 0, 0.05);
-}
+} */
 
 /* task bar caption text styles */
 
@@ -325,6 +335,7 @@ span.gfoldercollapse {
 .gtaskyellow,
 .gtaskpurple,
 .gtaskpink,
+.gtaskorange,
 .gproject {
   height: 13px;
   filter: alpha(opacity=90);
@@ -377,7 +388,7 @@ span.gfoldercollapse {
 
 .gproject {
   height: 16px;
-  background: #ff8800;
+  background: rgb(58, 132, 195);
   margin-top: 2px;
 }
 
@@ -386,7 +397,7 @@ span.gfoldercollapse {
   width: 0px;
   height: 0px;
   top: 2px;
-  border-top: 6px solid #ff8800;
+  border-top: 6px solid rgb(58, 132, 195);
   border-left: 4px solid transparent;
   border-bottom: 4px solid transparent;
   border-right: 4px solid transparent;
@@ -398,7 +409,7 @@ span.gfoldercollapse {
   width: 0px;
   height: 0px;
   top: 2px;
-  border-top: 6px solid #ff8800;
+  border-top: 6px solid rgb(58, 132, 195);
   border-left: 4px solid transparent;
   border-bottom: 4px solid transparent;
   border-right: 4px solid transparent;
@@ -419,16 +430,41 @@ span.gfoldercollapse {
 .gtaskblue {
   background: rgb(58, 132, 195);
   /* Old browsers */
-  background: linear-gradient(to bottom, rgba(58, 132, 195, 1) 0%, rgba(65, 154, 214, 1) 20%, rgba(75, 184, 240, 1) 40%, rgba(58, 139, 194, 1) 70%, rgba(38, 85, 139, 1) 100%);
+  background: linear-gradient(
+    to bottom,
+    rgba(58, 132, 195, 1) 0%,
+    rgba(65, 154, 214, 1) 20%,
+    rgba(75, 184, 240, 1) 40%,
+    rgba(58, 139, 194, 1) 70%,
+    rgba(38, 85, 139, 1) 100%
+  );
   /* W3C */
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#4bb8f0', endColorstr='#3a84c3', GradientType=0);
   /* IE6-9 */
 }
 
+.gtaskorange {
+  background: rgb(255, 165, 0);
+  background: linear-gradient(to bottom,
+    rgba(255, 165, 0, 1) 0%,
+    rgba(255, 140, 0, 1) 20%,
+    rgba(255, 119, 51, 1) 40%,
+    rgba(255, 140, 0, 1) 70%,
+    rgba(255, 69, 0, 1) 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#FFA500', endColorstr='#FF4500', GradientType=0);
+}
+
 .gtaskred {
   background: rgb(196, 58, 58);
   /* Old browsers */
-  background: linear-gradient(to bottom, rgba(196, 58, 58, 1) 0%, rgba(211, 65, 65, 1) 20%, rgba(239, 76, 76, 1) 40%, rgba(196, 58, 58, 1) 70%, rgba(135, 37, 37, 1) 100%);
+  background: linear-gradient(
+    to bottom,
+    rgba(196, 58, 58, 1) 0%,
+    rgba(211, 65, 65, 1) 20%,
+    rgba(239, 76, 76, 1) 40%,
+    rgba(196, 58, 58, 1) 70%,
+    rgba(135, 37, 37, 1) 100%
+  );
   /* W3C */
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ef4c4c', endColorstr='#c43a3a', GradientType=0);
   /* IE6-9 */
@@ -437,7 +473,14 @@ span.gfoldercollapse {
 .gtaskgreen {
   background: rgb(80, 193, 58);
   /* Old browsers */
-  background: linear-gradient(to bottom, rgba(80, 193, 58, 1) 0%, rgba(88, 209, 64, 1) 20%, rgba(102, 237, 75, 1) 40%, rgba(80, 193, 58, 1) 70%, rgba(53, 132, 37, 1) 100%);
+  background: linear-gradient(
+    to bottom,
+    rgba(80, 193, 58, 1) 0%,
+    rgba(88, 209, 64, 1) 20%,
+    rgba(102, 237, 75, 1) 40%,
+    rgba(80, 193, 58, 1) 70%,
+    rgba(53, 132, 37, 1) 100%
+  );
   /* W3C */
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#66ED4B', endColorstr='#50c13a', GradientType=0);
   /* IE6-9 */
@@ -446,7 +489,14 @@ span.gfoldercollapse {
 .gtaskyellow {
   background: rgb(247, 228, 56);
   /* Old browsers */
-  background: linear-gradient(to bottom, rgba(247, 228, 56, 1) 0%, rgba(239, 239, 55, 1) 20%, rgba(255, 255, 58, 1) 40%, rgba(242, 236, 55, 1) 70%, rgba(241, 218, 54, 1) 100%);
+  background: linear-gradient(
+    to bottom,
+    rgba(247, 228, 56, 1) 0%,
+    rgba(239, 239, 55, 1) 20%,
+    rgba(255, 255, 58, 1) 40%,
+    rgba(242, 236, 55, 1) 70%,
+    rgba(241, 218, 54, 1) 100%
+  );
   /* W3C */
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffff3a', endColorstr='#f7e438', GradientType=0);
   /* IE6-9 */
@@ -455,7 +505,14 @@ span.gfoldercollapse {
 .gtaskpurple {
   background: rgb(193, 58, 193);
   /* Old browsers */
-  background: linear-gradient(to bottom, rgba(193, 58, 193, 1) 0%, rgba(211, 65, 211, 1) 20%, rgba(239, 76, 239, 1) 40%, rgba(193, 58, 193, 1) 70%, rgba(137, 38, 137, 1) 100%);
+  background: linear-gradient(
+    to bottom,
+    rgba(193, 58, 193, 1) 0%,
+    rgba(211, 65, 211, 1) 20%,
+    rgba(239, 76, 239, 1) 40%,
+    rgba(193, 58, 193, 1) 70%,
+    rgba(137, 38, 137, 1) 100%
+  );
   /* W3C */
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ef4cef', endColorstr='#892689', GradientType=0);
   /* IE6-9 */
@@ -464,7 +521,14 @@ span.gfoldercollapse {
 .gtaskpink {
   background: rgb(249, 177, 245);
   /* Old browsers */
-  background: linear-gradient(to bottom, rgba(249, 177, 245, 1) 0%, rgba(247, 192, 243, 1) 20%, rgba(247, 202, 244, 1) 40%, rgba(249, 192, 246, 1) 70%, rgba(252, 174, 247, 1) 100%);
+  background: linear-gradient(
+    to bottom,
+    rgba(249, 177, 245, 1) 0%,
+    rgba(247, 192, 243, 1) 20%,
+    rgba(247, 202, 244, 1) 40%,
+    rgba(249, 192, 246, 1) 70%,
+    rgba(252, 174, 247, 1) 100%
+  );
   /* W3C */
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#f7caf4', endColorstr='#fcaef7', GradientType=0);
   /* IE6-9 */
@@ -475,6 +539,7 @@ span.gfoldercollapse {
 .gtaskgreencomplete,
 .gtaskyellowcomplete,
 .gtaskpurplecomplete,
+.gtaskorangecomplete,
 .gtaskpinkcomplete {
   float: left;
   overflow: hidden;
@@ -531,7 +596,7 @@ span.gfoldercollapse {
 }
 
 div.gtaskbarcontainer {
-  z-index: 10000;
+  z-index: 3;
   position: absolute;
   top: 0px;
 }
@@ -908,7 +973,7 @@ td.gspanning div {
 
 .resize-handle:hover,
 .resize-handle.resizing {
-  background-color: #2196F3;
+  background-color: #2196f3;
 }
 
 .gmainright {
@@ -973,6 +1038,12 @@ td.gspanning div {
     border-color: rgb(196, 58, 58);
   }
 
+  .gtaskorange {
+    height: 0px;
+    border-top: 13px solid;
+    border-color: rgb(255, 165, 0);
+  }
+
   .gtaskgreen {
     height: 0px;
     border-top: 13px solid;
@@ -1002,6 +1073,7 @@ td.gspanning div {
   .gtaskgreencomplete,
   .gtaskyellowcomplete,
   .gtaskpurplecomplete,
+  .gtaskorangecomplete,
   .gtaskpinkcomplete {
     height: 0px;
     filter: alpha(opacity=40);

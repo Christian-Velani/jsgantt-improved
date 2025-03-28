@@ -461,8 +461,8 @@ exports.GanttChart = function (pDiv, pFormat) {
         vTmpTab.style.width = vTaskLeftPx + "px"; // Ensure that the headings has exactly the same width as the chart grid
         // const vTaskPlanLeftPx = (vNumCols * (vColWidth + 3)) + 1;
         var vSingleCell = false;
-        if (this.vUseSingleCell !== 0 && this.vUseSingleCell < vNumCols * vNumRows)
-            vSingleCell = true;
+        // if (this.vUseSingleCell !== 0 && this.vUseSingleCell < vNumCols * vNumRows)
+        //   vSingleCell = true;
         draw_utils_1.newNode(vTmpDiv, "div", null, "rhscrpad", null, null, vTaskLeftPx + 1);
         vTmpDiv = draw_utils_1.newNode(vRightHeader, "div", null, "glabelfooter");
         return {
@@ -913,7 +913,6 @@ exports.GanttChart = function (pDiv, pFormat) {
             console.info("after DrawDependencies", ad, ad.getTime() - bdd.getTime());
         }
         this.drawComplete(vMinDate, vColWidth, bd);
-        // this.associatMouseWheelEvents();
         events_1.addListener("mousedown", events_1.startResize, general_utils_1.findObj("gmain-resize-handle"));
         events_1.addListener("touchstart", events_1.startResize, general_utils_1.findObj("gmain-resize-handle"));
     };
@@ -933,18 +932,6 @@ exports.GanttChart = function (pDiv, pFormat) {
             this.vEvents.afterDraw();
         }
     };
-    // this.associatMouseWheelEvents = function () {
-    //   const taskArea =
-    //     document.getElementById(this.vDivId + "chartTable") ||
-    //     document.querySelector(".gcharttable");
-    //   if (taskArea) {
-    //     addListener(
-    //       "wheel",
-    //       (event) => handleWheelScroll.call(this, event),
-    //       taskArea
-    //     );
-    //   }
-    // };
     if (this.vDiv &&
         this.vDiv.nodeName &&
         this.vDiv.nodeName.toLowerCase() == "div")
@@ -4744,7 +4731,6 @@ exports.processRows = function (pList, pID, pRow, pLevel, pOpen, pUseSort, vDebu
         }
     }
     if (pRow >= 0) {
-        console.log("Processando a linha: ", pList[pRow].getName());
         if (pList[pRow].getGroupMinStart() != null &&
             pList[pRow].getGroupMinStart() < vMinDate) {
             vMinDate = pList[pRow].getGroupMinStart();

@@ -979,7 +979,6 @@ export const processRows = function (
   }
 
   if (pRow >= 0) {
-    console.log("Processando a linha: ", pList[pRow].getName());
     if (
       pList[pRow].getGroupMinStart() != null &&
       pList[pRow].getGroupMinStart() < vMinDate
