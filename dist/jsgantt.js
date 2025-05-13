@@ -605,6 +605,40 @@ exports.GanttChart = function (pDiv, pFormat) {
                         if (vTmpDiv2) {
                             draw_utils_1.newNode(vTmpDiv2, "div", this.vDivId + "complete_" + vID, this.vTaskList[i].getClass() + "complete", null, this.vTaskList[i].getCompStr());
                         }
+                        vCaptClass = "gcaption";
+                        if (this.getCaptionType() && vCaptClass) {
+                            // determina o texto
+                            var vCaptionStr = void 0;
+                            switch (this.getCaptionType()) {
+                                case "Caption":
+                                    vCaptionStr = vTmpItem.getCaption();
+                                    break;
+                                case "Resource":
+                                    vCaptionStr = vTmpItem.getResource();
+                                    break;
+                                case "Duration":
+                                    vCaptionStr = vTmpItem.getDuration(this.vFormat, this.vLangs[this.vLang]);
+                                    break;
+                                case "Complete":
+                                    vCaptionStr = vTmpItem.getCompStr();
+                                    break;
+                            }
+                            // cria o caption
+                            var caption = document.createElement("div");
+                            caption.className = vCaptClass;
+                            caption.style.width = "120px";
+                            if (vCaptClass === "gmilecaption")
+                                caption.style.marginLeft = "12px";
+                            caption.textContent = vCaptionStr;
+                            if (vTmpDiv2) {
+                                // adiciona DENTRO da barra, imediatamente após o complete
+                                vTmpDiv2.appendChild(caption);
+                            }
+                            else {
+                                // fallback: adiciona no container geral
+                                vTmpDiv_1.appendChild(caption);
+                            }
+                        }
                         if (vComb) {
                             vTmpItem = this.vTaskList[i].getParItem();
                         }
@@ -673,6 +707,40 @@ exports.GanttChart = function (pDiv, pFormat) {
                     if (vTmpDiv2) {
                         draw_utils_1.newNode(vTmpDiv2, "div", this.vDivId + "complete_" + vID, this.vTaskList[i].getClass() + "complete", null, this.vTaskList[i].getCompStr());
                     }
+                    vCaptClass = "gcaption";
+                    if (this.getCaptionType() && vCaptClass) {
+                        // determina o texto
+                        var vCaptionStr = void 0;
+                        switch (this.getCaptionType()) {
+                            case "Caption":
+                                vCaptionStr = vTmpItem.getCaption();
+                                break;
+                            case "Resource":
+                                vCaptionStr = vTmpItem.getResource();
+                                break;
+                            case "Duration":
+                                vCaptionStr = vTmpItem.getDuration(this.vFormat, this.vLangs[this.vLang]);
+                                break;
+                            case "Complete":
+                                vCaptionStr = vTmpItem.getCompStr();
+                                break;
+                        }
+                        // cria o caption
+                        var caption = document.createElement("div");
+                        caption.className = vCaptClass;
+                        caption.style.width = "120px";
+                        if (vCaptClass === "gmilecaption")
+                            caption.style.marginLeft = "12px";
+                        caption.textContent = vCaptionStr;
+                        if (vTmpDiv2) {
+                            // adiciona DENTRO da barra, imediatamente após o complete
+                            vTmpDiv2.appendChild(caption);
+                        }
+                        else {
+                            // fallback: adiciona no container geral
+                            vTmpDiv_1.appendChild(caption);
+                        }
+                    }
                     // caption
                     if (vComb) {
                         vTmpItem = this.vTaskList[i].getParItem();
@@ -689,24 +757,35 @@ exports.GanttChart = function (pDiv, pFormat) {
                     }
                 }
             }
-            if (this.getCaptionType() && vCaptClass !== null) {
-                var vCaptionStr = void 0;
-                switch (this.getCaptionType()) {
-                    case "Caption":
-                        vCaptionStr = vTmpItem.getCaption();
-                        break;
-                    case "Resource":
-                        vCaptionStr = vTmpItem.getResource();
-                        break;
-                    case "Duration":
-                        vCaptionStr = vTmpItem.getDuration(this.vFormat, this.vLangs[this.vLang]);
-                        break;
-                    case "Complete":
-                        vCaptionStr = vTmpItem.getCompStr();
-                        break;
-                }
-                draw_utils_1.newNode(vTmpDiv_1, "div", null, vCaptClass, vCaptionStr, 120, vCaptClass == "gmilecaption" ? 12 : 0);
-            }
+            // if (this.getCaptionType() && vCaptClass !== null) {
+            //   let vCaptionStr: any = null;
+            //   switch (this.getCaptionType()) {
+            //     case "Caption":
+            //       vCaptionStr = vTmpItem.getCaption();
+            //       break;
+            //     case "Resource":
+            //       vCaptionStr = vTmpItem.getResource();
+            //       break;
+            //     case "Duration":
+            //       vCaptionStr = vTmpItem.getDuration(
+            //         this.vFormat,
+            //         this.vLangs[this.vLang]
+            //       );
+            //       break;
+            //     case "Complete":
+            //       vCaptionStr = vTmpItem.getCompStr();
+            //       break;
+            //   }
+            //   newNode(
+            //     vTmpDiv,
+            //     "div",
+            //     null,
+            //     vCaptClass,
+            //     vCaptionStr,
+            //     120,
+            //     vCaptClass == "gmilecaption" ? 12 : 0
+            //   );
+            // }
             // Add Task Info div for tooltip
             if (this.vTaskList[i].getTaskDiv() && vTmpDiv_1) {
                 var vTmpDiv2 = draw_utils_1.newNode(vTmpDiv_1, "div", this.vDivId + "tt" + vID, null, null, null, null, "none");

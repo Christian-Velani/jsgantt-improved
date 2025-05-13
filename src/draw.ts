@@ -1225,6 +1225,46 @@ export const GanttChart = function (pDiv, pFormat) {
               );
             }
 
+            vCaptClass = "gcaption";
+
+            if (this.getCaptionType() && vCaptClass) {
+              // determina o texto
+              let vCaptionStr;
+              switch (this.getCaptionType()) {
+                case "Caption":
+                  vCaptionStr = vTmpItem.getCaption();
+                  break;
+                case "Resource":
+                  vCaptionStr = vTmpItem.getResource();
+                  break;
+                case "Duration":
+                  vCaptionStr = vTmpItem.getDuration(
+                    this.vFormat,
+                    this.vLangs[this.vLang]
+                  );
+                  break;
+                case "Complete":
+                  vCaptionStr = vTmpItem.getCompStr();
+                  break;
+              }
+
+              // cria o caption
+              const caption = document.createElement("div");
+              caption.className = vCaptClass;
+              caption.style.width = "120px";
+              if (vCaptClass === "gmilecaption")
+                caption.style.marginLeft = "12px";
+              caption.textContent = vCaptionStr;
+
+              if (vTmpDiv2) {
+                // adiciona DENTRO da barra, imediatamente após o complete
+                vTmpDiv2.appendChild(caption);
+              } else {
+                // fallback: adiciona no container geral
+                vTmpDiv.appendChild(caption);
+              }
+            }
+
             if (vComb) {
               vTmpItem = this.vTaskList[i].getParItem();
             }
@@ -1388,6 +1428,46 @@ export const GanttChart = function (pDiv, pFormat) {
             );
           }
 
+          vCaptClass = "gcaption";
+
+          if (this.getCaptionType() && vCaptClass) {
+            // determina o texto
+            let vCaptionStr;
+            switch (this.getCaptionType()) {
+              case "Caption":
+                vCaptionStr = vTmpItem.getCaption();
+                break;
+              case "Resource":
+                vCaptionStr = vTmpItem.getResource();
+                break;
+              case "Duration":
+                vCaptionStr = vTmpItem.getDuration(
+                  this.vFormat,
+                  this.vLangs[this.vLang]
+                );
+                break;
+              case "Complete":
+                vCaptionStr = vTmpItem.getCompStr();
+                break;
+            }
+
+            // cria o caption
+            const caption = document.createElement("div");
+            caption.className = vCaptClass;
+            caption.style.width = "120px";
+            if (vCaptClass === "gmilecaption")
+              caption.style.marginLeft = "12px";
+            caption.textContent = vCaptionStr;
+
+            if (vTmpDiv2) {
+              // adiciona DENTRO da barra, imediatamente após o complete
+              vTmpDiv2.appendChild(caption);
+            } else {
+              // fallback: adiciona no container geral
+              vTmpDiv.appendChild(caption);
+            }
+          }
+
           // caption
           if (vComb) {
             vTmpItem = this.vTaskList[i].getParItem();
@@ -1414,35 +1494,35 @@ export const GanttChart = function (pDiv, pFormat) {
         }
       }
 
-      if (this.getCaptionType() && vCaptClass !== null) {
-        let vCaptionStr: any;
-        switch (this.getCaptionType()) {
-          case "Caption":
-            vCaptionStr = vTmpItem.getCaption();
-            break;
-          case "Resource":
-            vCaptionStr = vTmpItem.getResource();
-            break;
-          case "Duration":
-            vCaptionStr = vTmpItem.getDuration(
-              this.vFormat,
-              this.vLangs[this.vLang]
-            );
-            break;
-          case "Complete":
-            vCaptionStr = vTmpItem.getCompStr();
-            break;
-        }
-        newNode(
-          vTmpDiv,
-          "div",
-          null,
-          vCaptClass,
-          vCaptionStr,
-          120,
-          vCaptClass == "gmilecaption" ? 12 : 0
-        );
-      }
+      // if (this.getCaptionType() && vCaptClass !== null) {
+      //   let vCaptionStr: any = null;
+      //   switch (this.getCaptionType()) {
+      //     case "Caption":
+      //       vCaptionStr = vTmpItem.getCaption();
+      //       break;
+      //     case "Resource":
+      //       vCaptionStr = vTmpItem.getResource();
+      //       break;
+      //     case "Duration":
+      //       vCaptionStr = vTmpItem.getDuration(
+      //         this.vFormat,
+      //         this.vLangs[this.vLang]
+      //       );
+      //       break;
+      //     case "Complete":
+      //       vCaptionStr = vTmpItem.getCompStr();
+      //       break;
+      //   }
+      //   newNode(
+      //     vTmpDiv,
+      //     "div",
+      //     null,
+      //     vCaptClass,
+      //     vCaptionStr,
+      //     120,
+      //     vCaptClass == "gmilecaption" ? 12 : 0
+      //   );
+      // }
 
       // Add Task Info div for tooltip
       if (this.vTaskList[i].getTaskDiv() && vTmpDiv) {

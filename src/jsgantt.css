@@ -265,13 +265,14 @@ span.gfoldercollapse {
 .gmilecaption,
 .ggroupcaption,
 .gcaption {
-  font-weight: normal;
-  font-size: 9px;
+  font-weight: bold;
+  font-size: 10px;
   text-align: left;
   white-space: nowrap;
   top: 1px;
-  position: absolute;
+  /* position: absolute; */
   top: 2px;
+  padding-top: 2px
 }
 
 .ggroupcaption,
@@ -384,6 +385,7 @@ span.gfoldercollapse {
   background-color: #ffffff;
   margin-top: 3px;
   margin-bottom: 3px;
+  margin-right: 2px;
 }
 
 .gproject {
@@ -425,6 +427,7 @@ span.gfoldercollapse {
   background-color: #ffffff;
   margin-top: 2px;
   margin-bottom: 2px;
+  margin-right: 2px
 }
 
 .gtaskblue {
@@ -548,6 +551,7 @@ span.gfoldercollapse {
   opacity: 1;
   background-color: #000000;
   margin-top: 4px;
+  margin-right: 2px;
 }
 
 /*  END Task bar styles */
@@ -1081,6 +1085,7 @@ td.gspanning div {
     margin-top: -9px;
     border-top: 5px solid;
     border-color: #000000;
+    margin-right: 2px;
   }
 
   .ggroupblackcomplete {
@@ -1090,6 +1095,7 @@ td.gspanning div {
     margin-top: -5px;
     border-top: 3px solid;
     border-color: #777777;
+    margin-right: 2px;
   }
 
   .gmainright,
